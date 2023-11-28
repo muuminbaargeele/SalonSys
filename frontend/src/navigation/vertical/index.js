@@ -22,12 +22,12 @@ const navigation = () => {
     {
       title: 'Register',
       icon: AccountPlusOutline,
-      path: '/pages/register'
+      path: '/register'
     },
     {
       title: 'Manage',
       icon: AccountGroupOutline,
-      path: '/pages/login'
+      path: '/manage'
     }
   ]
 }
