@@ -37,7 +37,6 @@ const CardStatsVertical = props => {
             {trendNumber}
           </Typography>
         </Box>
-        <Typography variant='caption'>{subtitle}</Typography>
       </CardContent>
     </Card>
   )
