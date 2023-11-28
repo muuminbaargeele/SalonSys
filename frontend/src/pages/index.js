@@ -2,8 +2,8 @@
 import Grid from '@mui/material/Grid'
 
 // ** Icons Imports
-import Poll from 'mdi-material-ui/Poll'
-import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
+import CheckBold from 'mdi-material-ui/CheckBold'
+import Cancel from 'mdi-material-ui/Cancel'
 
 // ** Custom Components Imports
 import CardStatisticsVerticalComponent from 'src/@core/components/card-statistics/card-stats-vertical'
@@ -25,20 +25,10 @@ const Dashboard = () => {
         <Grid item xs={12} md={6} lg={4}>
           <Grid container spacing={6}>
             <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='$25.6k'
-                icon={<Poll />}
-                color='success'
-                title='Total Profit'
-              />
+              <CardStatisticsVerticalComponent stats='14' icon={<CheckBold />} color='success' title='Active Salons' />
             </Grid>
             <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='862'
-                trend='negative'
-                title='New Project'
-                icon={<BriefcaseVariantOutline />}
-              />
+              <CardStatisticsVerticalComponent stats='10' trend='negative' title='inActive Salons' icon={<Cancel />} />
             </Grid>
           </Grid>
         </Grid>

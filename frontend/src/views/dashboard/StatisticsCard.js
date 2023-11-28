@@ -12,32 +12,32 @@ import CardContent from '@mui/material/CardContent'
 import HomeModern from 'mdi-material-ui/HomeModern'
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
-import CellphoneLink from 'mdi-material-ui/CellphoneLink'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
+import Import from 'mdi-material-ui/Import'
+import History from 'mdi-material-ui/History'
 
 const salesData = [
   {
     stats: '24',
-    title: 'Salons',
+    title: 'Total Salons',
     color: 'primary',
     icon: <HomeModern sx={{ fontSize: '1.75rem' }} />
   },
   {
-    stats: '12.5k',
-    title: 'Customers',
+    stats: '9',
+    title: 'Recent Salons',
     color: 'success',
-    icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
+    icon: <History sx={{ fontSize: '1.75rem' }} />
   },
   {
-    stats: '1.54k',
+    stats: '499',
     color: 'warning',
-    title: 'Products',
-    icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
+    title: 'Total requests',
+    icon: <Import sx={{ fontSize: '1.75rem' }} />
   },
   {
-    stats: '$88k',
+    stats: '$3k',
     color: 'info',
-    title: 'Revenue',
+    title: 'Total Income',
     icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
   }
 ]
@@ -72,7 +72,7 @@ const StatisticsCard = () => {
   return (
     <Card>
       <CardHeader
-        title='Statistics Card'
+        title='Overview'
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
             <DotsVertical />
