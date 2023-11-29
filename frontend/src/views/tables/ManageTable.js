@@ -33,8 +33,18 @@ const columns = [
     minWidth: 100
   },
   {
-    id: 'role',
-    label: 'Role',
+    id: 'CreateDT',
+    label: 'Create Date',
+    minWidth: 100
+  },
+  {
+    id: 'Amount',
+    label: 'Amount',
+    minWidth: 100
+  },
+  {
+    id: 'remaining',
+    label: 'remaining',
     minWidth: 100
   },
   {
@@ -44,7 +54,7 @@ const columns = [
   },
   { id: 'actions', label: 'Actions', minWidth: 100 }
 ]
-function createData(id, salonname, address, ownername, phone, role, state) {
+function createData(id, salonname, address, ownername, phone, CreateDT, Amount, remaining, state) {
   const handleRowClick = id => {
     // Do whatever you want with the selected ID (e.g., print it)
     console.log(`Selected Row ID: ${id}`)
@@ -55,7 +65,9 @@ function createData(id, salonname, address, ownername, phone, role, state) {
     address,
     ownername,
     phone,
-    role,
+    CreateDT,
+    Amount,
+    remaining,
     state,
     actions: (
       <Switch
@@ -70,9 +82,9 @@ function createData(id, salonname, address, ownername, phone, role, state) {
 }
 
 const rows = [
-  createData(1, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', 'SalonAdmin', '1'),
-  createData(2, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', 'SalonAdmin', '0'),
-  createData(3, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', 'SalonAdmin', '0')
+  createData(1, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', '28/10/2023', '15$', '17 Days', '1'),
+  createData(2, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', '28/10/2023', '15$', 'Expaired', '0'),
+  createData(3, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', '28/10/2023', '15$', '17 Days', '0'),
 ]
 
 const ManageTable = props => {
@@ -111,7 +123,7 @@ const ManageTable = props => {
               </IconButton>
             ) : null}
             <TextField
-              onChange={() => {}}
+              onChange={() => { }}
               size='small'
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
               InputProps={{
@@ -152,6 +164,20 @@ const ManageTable = props => {
                         <TableCell key={column.id} align={column.align}>
                           <span style={{ color: textColor, fontWeight: 600 }}>
                             {row.state === '1' ? 'Active' : 'Inactive'}
+                          </span>
+                        </TableCell>
+                      )
+                    }
+
+                    if (column.id === 'remaining') {
+                      const expaired = row.remaining === "Expaired"
+                      // Apply different colors based on the "state" value
+                      const textColor = expaired && 'red'
+
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          <span style={{ color: textColor, fontWeight: expaired && 600 }}>
+                            {row.remaining}
                           </span>
                         </TableCell>
                       )
