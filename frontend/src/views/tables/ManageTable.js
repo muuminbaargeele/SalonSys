@@ -17,6 +17,7 @@ import Divider from '@mui/material/Divider'
 import Switch from '@mui/material/Switch'
 import { Box, CardActions, Grid, IconButton, InputAdornment, TextField, useMediaQuery } from '@mui/material'
 import Magnify from 'mdi-material-ui/Magnify'
+import { Chip } from 'mdi-material-ui'
 
 const columns = [
   { id: 'id', label: '#', minWidth: 50 },
@@ -84,7 +85,7 @@ function createData(id, salonname, address, ownername, phone, CreateDT, Amount, 
 const rows = [
   createData(1, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', '28/10/2023', '15$', '17 Days', '1'),
   createData(2, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', '28/10/2023', '15$', 'Expaired', '0'),
-  createData(3, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', '28/10/2023', '15$', '17 Days', '0'),
+  createData(3, 'Ubax Beauty', 'Taleex', 'Cali Jaamac', '0612762726', '28/10/2023', '15$', '17 Days', '0')
 ]
 
 const ManageTable = props => {
@@ -123,7 +124,7 @@ const ManageTable = props => {
               </IconButton>
             ) : null}
             <TextField
-              onChange={() => { }}
+              onChange={() => {}}
               size='small'
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
               InputProps={{
@@ -158,7 +159,7 @@ const ManageTable = props => {
 
                     if (column.id === 'state') {
                       // Apply different colors based on the "state" value
-                      const textColor = row.state === '1' ? 'green' : 'red'
+                      const textColor = row.state === '1' ? 'danger' : 'red'
 
                       return (
                         <TableCell key={column.id} align={column.align}>
@@ -170,15 +171,13 @@ const ManageTable = props => {
                     }
 
                     if (column.id === 'remaining') {
-                      const expaired = row.remaining === "Expaired"
+                      const expaired = row.remaining === 'Expaired'
                       // Apply different colors based on the "state" value
                       const textColor = expaired && 'red'
 
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          <span style={{ color: textColor, fontWeight: expaired && 600 }}>
-                            {row.remaining}
-                          </span>
+                          <span style={{ color: textColor, fontWeight: expaired && 600 }}>{row.remaining}</span>
                         </TableCell>
                       )
                     }

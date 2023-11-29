@@ -28,7 +28,6 @@ const CustomInput = forwardRef((props, ref) => {
 })
 
 const FormLayoutsSeparator = () => {
-
   const [values, setValues] = useState({
     password: '',
     password2: '',
@@ -97,6 +96,9 @@ const FormLayoutsSeparator = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
+              <TextField type='number' fullWidth label='Amount' placeholder='00.00' />
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-separator-password'>Password</InputLabel>
                 <OutlinedInput
@@ -114,30 +116,6 @@ const FormLayoutsSeparator = () => {
                         aria-label='toggle password visibility'
                       >
                         {values.showPassword ? <EyeOutline /> : <EyeOffOutline />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                />
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor='form-layouts-separator-password-2'>Confirm Password</InputLabel>
-                <OutlinedInput
-                  value={values.password2}
-                  label='Confirm Password'
-                  id='form-layouts-separator-password-2'
-                  onChange={handleConfirmChange('password2')}
-                  type={values.showPassword2 ? 'text' : 'password'}
-                  endAdornment={
-                    <InputAdornment position='end'>
-                      <IconButton
-                        edge='end'
-                        aria-label='toggle password visibility'
-                        onClick={handleClickShowConfirmPassword}
-                        onMouseDown={handleMouseDownConfirmPassword}
-                      >
-                        {values.showPassword2 ? <EyeOutline /> : <EyeOffOutline />}
                       </IconButton>
                     </InputAdornment>
                   }
