@@ -1,6 +1,9 @@
 // ** React Imports
 import { useState } from 'react'
 
+// ** Next Import
+import { useRouter } from 'next/router'
+
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
@@ -23,9 +26,19 @@ const ImgStyled = styled('img')(({ theme }) => ({
   borderRadius: theme.shape.borderRadius
 }))
 
+
+
 const TabAccount = () => {
   // ** State
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
+
+  // ** Hooks
+  const router = useRouter()
+  const handleDropdownClose = url => {
+    if (url) {
+      router.push(url)
+    }
+  }
 
   const onChange = file => {
     const reader = new FileReader()
@@ -59,21 +72,16 @@ const TabAccount = () => {
               style={{ pointerEvents: 'none' }}
               fullWidth
               label='Username'
-              placeholder='main admin'
-              defaultValue='main admin'
+              defaultValue='mohamed_omer'
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Role</InputLabel>
-              <Select style={{ pointerEvents: 'none' }} label='Role' defaultValue='admin'>
-                <MenuItem value='admin'>Admin</MenuItem>
-                <MenuItem value='author'>Author</MenuItem>
-                <MenuItem value='editor'>Editor</MenuItem>
-                <MenuItem value='maintainer'>Maintainer</MenuItem>
-                <MenuItem value='subscriber'>Subscriber</MenuItem>
-              </Select>
-            </FormControl>
+            <TextField
+              style={{ pointerEvents: 'none' }}
+              fullWidth
+              label='Role'
+              defaultValue='MainAdmin'
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
@@ -85,7 +93,7 @@ const TabAccount = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <Button variant='contained' sx={{ marginRight: 3.5 }}>
+            <Button variant='contained' sx={{ marginRight: 3.5 }} onClick={() => handleDropdownClose('/login')} >
               <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem' }} />
               Logout
             </Button>

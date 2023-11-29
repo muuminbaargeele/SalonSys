@@ -16,6 +16,7 @@ import IconButton from '@mui/material/IconButton'
 
 // ** Icons Imports
 import Pencil from 'mdi-material-ui/Pencil'
+import Switch from '@mui/material/Switch';
 
 const columns = [
   { id: 'id', label: '#', minWidth: 50 },
@@ -48,12 +49,21 @@ function createData(id, salonname, address, ownername, phone, role, state) {
     // Do whatever you want with the selected ID (e.g., print it)
     console.log(`Selected Row ID: ${id}`);
   };
-  return { id, salonname, address, ownername, phone, role, state, actions: <IconButton onClick={() => handleRowClick(id)} aria-label='expand row' size='small'><Pencil /></IconButton> }
+  return {
+    id, salonname, address, ownername, phone, role, state, actions: <Switch
+      checked={state === '1'}
+      onChange={() => {
+        handleRowClick(id)
+      }}
+      color='primary'
+    />
+  }
 }
 
 const rows = [
   createData(1, 'Ubax Beauty', 'Taleex', "Cali Jaamac", "0612762726", "SalonAdmin", "1"),
   createData(2, 'Ubax Beauty', 'Taleex', "Cali Jaamac", "0612762726", "SalonAdmin", "0"),
+  createData(3, 'Ubax Beauty', 'Taleex', "Cali Jaamac", "0612762726", "SalonAdmin", "0"),
 ]
 
 const ManageTable = () => {
