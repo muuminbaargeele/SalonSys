@@ -33,7 +33,7 @@ const DashboardTable = props => {
   const { hidden, hiddenSm } = props
   return (
     <Card>
-      <CardActions>
+      <CardActions sx={{height:60}} >
         <Box
           sx={{
             width: '100%',

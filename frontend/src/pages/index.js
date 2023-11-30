@@ -5,6 +5,9 @@ import Grid from '@mui/material/Grid'
 import CheckBold from 'mdi-material-ui/CheckBold'
 import Cancel from 'mdi-material-ui/Cancel'
 
+// ** Next Import
+import { useRouter } from 'next/router'
+
 // ** Custom Components Imports
 import CardStatisticsVerticalComponent from 'src/@core/components/card-statistics/card-stats-vertical'
 
@@ -14,8 +17,19 @@ import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 // ** Demo Components Imports
 import Table from 'src/views/dashboard/Table'
 import StatisticsCard from 'src/views/dashboard/StatisticsCard'
+import { useEffect } from 'react'
 
 const Dashboard = () => {
+  const isLogin = true;
+  const router = useRouter()
+
+
+  useEffect(() => {
+    if (!isLogin) {
+      router.push('/login');
+    }
+  }, [isLogin, router]);
+
   return (
     <ApexChartWrapper>
       <Grid container spacing={6}>
