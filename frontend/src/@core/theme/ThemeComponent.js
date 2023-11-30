@@ -3,6 +3,8 @@ import CssBaseline from '@mui/material/CssBaseline'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles'
 
+import { Toaster } from 'react-hot-toast'
+
 // ** Theme Config
 import themeConfig from 'src/configs/themeConfig'
 
@@ -41,6 +43,7 @@ const ThemeComponent = props => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <GlobalStyles styles={() => GlobalStyling(theme)} />
+      <Toaster />
       {children}
     </ThemeProvider>
   )

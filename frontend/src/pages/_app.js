@@ -27,6 +27,9 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // ** Global css styles
 import '../../styles/globals.css'
 
+// ** Contexts
+import { AuthContextProvider } from 'src/context/AuthContext'
+
 const clientSideEmotionCache = createEmotionCache()
 
 // ** Pace Loader
@@ -61,13 +64,15 @@ const App = props => {
         <meta name='viewport' content='initial-scale=1, width=device-width' />
       </Head>
 
-      <SettingsProvider>
-        <SettingsConsumer>
-          {({ settings }) => {
-            return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-          }}
-        </SettingsConsumer>
-      </SettingsProvider>
+      <AuthContextProvider>
+        <SettingsProvider>
+          <SettingsConsumer>
+            {({ settings }) => {
+              return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+            }}
+          </SettingsConsumer>
+        </SettingsProvider>
+      </AuthContextProvider>
     </CacheProvider>
   )
 }

@@ -1,5 +1,5 @@
 // ** React Imports
-import { forwardRef, useState } from 'react'
+import { useState } from 'react'
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
@@ -22,21 +22,24 @@ import Select from '@mui/material/Select'
 // ** Icons Imports
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
-
-const CustomInput = forwardRef((props, ref) => {
-  return <TextField fullWidth {...props} inputRef={ref} label='Birth Date' autoComplete='off' />
-})
+import axios from 'axios'
 
 const FormLayoutsSeparator = () => {
   const [values, setValues] = useState({
+    ownerName: '',
+    phone: '',
+    role: '',
+    amount: '',
     password: '',
-    password2: '',
-    showPassword: false,
-    showPassword2: false
+    username: '',
+    salonName: '',
+    address: ''
   })
 
-  // Handle Password
-  const handlePasswordChange = prop => event => {
+  const BASE_URL = 'https://salonsys.000webhostapp.com/backend/api'
+
+  // Handle Change
+  const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
@@ -48,24 +51,41 @@ const FormLayoutsSeparator = () => {
     event.preventDefault()
   }
 
-  // Handle Confirm Password
-  const handleConfirmChange = prop => event => {
-    setValues({ ...values, [prop]: event.target.value })
-  }
-
-  const handleClickShowConfirmPassword = () => {
-    setValues({ ...values, showPassword2: !values.showPassword2 })
-  }
-
-  const handleMouseDownConfirmPassword = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
+
+    // const currentDate = Date.()
+    // console.log(currentDate)
+
+    const params = new URLSearchParams()
+    params.append('OwnerName', values.ownerName)
+    params.append('Username', values.username)
+    params.append('Phone', values.phone)
+    params.append('Role', values.role)
+    params.append('Amount', values.amount)
+    params.append('Password', values.password)
+    params.append('SalonName', values.salonName)
+    params.append('Address', values.address)
+    // params.append('Date')
+
+    const requestData = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+
+    try {
+      const response = await axios.post(`${BASE_URL}`, params, requestData)
+      const data = await response.data
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
     <Card>
       <CardHeader title='Register New User' titleTypographyProps={{ variant: 'h6' }} />
       <Divider sx={{ margin: 0 }} />
-      <form onSubmit={e => e.preventDefault()}>
+      <form onSubmit={handleSubmit}>
         <CardContent>
           <Grid container spacing={5}>
             <Grid item xs={12}>
@@ -74,13 +94,32 @@ const FormLayoutsSeparator = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Owner Name' placeholder='cali' />
+              <TextField
+                fullWidth
+                label='Owner Name'
+                placeholder='cali'
+                value={values.ownerName}
+                onChange={handleChange('ownerName')}
+              />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Username' placeholder='cali' />
+              <TextField
+                fullWidth
+                label='Username'
+                placeholder='cali'
+                value={values.username}
+                onChange={handleChange('username')}
+              />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth type='number' label='Phone No.' placeholder='061xxxxxxx' />
+              <TextField
+                fullWidth
+                type='number'
+                label='Phone No.'
+                placeholder='061xxxxxxx'
+                value={values.phone}
+                onChange={handleChange('phone')}
+              />
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
@@ -90,13 +129,22 @@ const FormLayoutsSeparator = () => {
                   defaultValue=''
                   id='form-layouts-separator-select'
                   labelId='form-layouts-separator-select-label'
+                  value={values.role}
+                  onChange={handleChange('role')}
                 >
                   <MenuItem value='SalonAdmin'>SalonAdmin</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField type='number' fullWidth label='Amount' placeholder='00.00' />
+              <TextField
+                type='number'
+                fullWidth
+                label='Amount'
+                placeholder='00.00'
+                value={values.amount}
+                onChange={handleChange('amount')}
+              />
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
@@ -104,8 +152,8 @@ const FormLayoutsSeparator = () => {
                 <OutlinedInput
                   label='Password'
                   value={values.password}
+                  onChange={handleChange('password')}
                   id='form-layouts-separator-password'
-                  onChange={handlePasswordChange('password')}
                   type={values.showPassword ? 'text' : 'password'}
                   endAdornment={
                     <InputAdornment position='end'>
@@ -131,10 +179,22 @@ const FormLayoutsSeparator = () => {
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Salon Name' placeholder='UbaxSalon' />
+              <TextField
+                fullWidth
+                label='Salon Name'
+                placeholder='UbaxSalon'
+                value={values.salonName}
+                onChange={handleChange('salonName')}
+              />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth label='Address' placeholder='Taleex' />
+              <TextField
+                fullWidth
+                label='Address'
+                placeholder='Taleex'
+                value={values.address}
+                onChange={handleChange('address')}
+              />
             </Grid>
           </Grid>
         </CardContent>

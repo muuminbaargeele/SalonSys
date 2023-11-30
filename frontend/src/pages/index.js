@@ -19,16 +19,18 @@ import Table from 'src/views/dashboard/Table'
 import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import { useEffect } from 'react'
 
-const Dashboard = () => {
-  const isLogin = true;
-  const router = useRouter()
+import { useAuth } from 'src/context/AuthContext'
 
+const Dashboard = () => {
+  const { isLogin } = useAuth()
+
+  const router = useRouter()
 
   useEffect(() => {
     if (!isLogin) {
-      router.push('/login');
+      router.push('/login')
     }
-  }, [isLogin, router]);
+  }, [isLogin, router])
 
   return (
     <ApexChartWrapper>

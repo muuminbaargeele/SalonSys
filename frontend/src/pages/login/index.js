@@ -31,6 +31,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
+import { useAuth } from 'src/context/AuthContext'
+
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: { width: '28rem' }
@@ -40,12 +42,15 @@ const LoginPage = () => {
   // ** State
   const [values, setValues] = useState({
     password: '',
+    username: '',
     showPassword: false
   })
 
   // ** Hook
   const theme = useTheme()
   const router = useRouter()
+
+  const { login } = useAuth()
 
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
@@ -57,6 +62,11 @@ const LoginPage = () => {
 
   const handleMouseDownPassword = event => {
     event.preventDefault()
+  }
+
+  const handleSubmit = event => {
+    event.preventDefault()
+    login(values.username, values.password)
   }
 
   return (
@@ -142,8 +152,16 @@ const LoginPage = () => {
             </Typography>
             <Typography variant='body2'>Please sign-in to your account</Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={e => e.preventDefault()}>
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} />
+          <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+            <TextField
+              autoFocus
+              fullWidth
+              id='username'
+              label='Username'
+              onChange={handleChange('username')}
+              value={values.username}
+              sx={{ marginBottom: 4 }}
+            />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
@@ -169,13 +187,7 @@ const LoginPage = () => {
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             ></Box>
-            <Button
-              fullWidth
-              size='large'
-              variant='contained'
-              sx={{ marginBottom: 7 }}
-              onClick={() => router.push('/')}
-            >
+            <Button type='submit' fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
               Login
             </Button>
           </form>
