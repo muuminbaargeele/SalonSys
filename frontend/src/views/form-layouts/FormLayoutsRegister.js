@@ -19,9 +19,12 @@ import OutlinedInput from '@mui/material/OutlinedInput'
 import InputAdornment from '@mui/material/InputAdornment'
 import Select from '@mui/material/Select'
 
+import toast from 'react-hot-toast'
+
 // ** Icons Imports
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
+
 import axios from 'axios'
 
 const FormLayoutsSeparator = () => {
@@ -36,15 +39,13 @@ const FormLayoutsSeparator = () => {
     address: ''
   })
 
-  const BASE_URL = 'https://salonsys.000webhostapp.com/backend/api'
-
   // Handle Change
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword })
+    setValues({ ...values, password: !values.password })
   }
 
   const handleMouseDownPassword = event => {
@@ -54,11 +55,29 @@ const FormLayoutsSeparator = () => {
   const handleSubmit = async event => {
     event.preventDefault()
 
-    // const currentDate = Date.()
-    // console.log(currentDate)
+    if (
+      !values.address ||
+      !values.amount ||
+      !values.ownerName ||
+      !values.password ||
+      !values.phone ||
+      !values.role ||
+      !values.salonName ||
+      !values.username
+    )
+      return toast.error('Fill all inputfields.')
+
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth() + 1
+    const currentDay = currentDate.getDate()
+    const currentHour = currentDate.getHours()
+    const currentMinute = currentDate.getMinutes()
+    const currentSecond = currentDate.getSeconds()
+    const date = `${currentYear}-${currentMonth}-${currentDay} ${currentHour}:${currentMinute}:${currentSecond}`
 
     const params = new URLSearchParams()
-    params.append('OwnerName', values.ownerName)
+    params.append('Name', values.ownerName)
     params.append('Username', values.username)
     params.append('Phone', values.phone)
     params.append('Role', values.role)
@@ -66,7 +85,7 @@ const FormLayoutsSeparator = () => {
     params.append('Password', values.password)
     params.append('SalonName', values.salonName)
     params.append('Address', values.address)
-    // params.append('Date')
+    params.append('CreateDT', date)
 
     const requestData = {
       method: 'POST',
@@ -74,8 +93,17 @@ const FormLayoutsSeparator = () => {
     }
 
     try {
-      const response = await axios.post(`${BASE_URL}`, params, requestData)
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/mainadmin/registersalon.php',
+        params,
+        requestData
+      )
       const data = await response.data
+      if (data == 'success') {
+        toast.success('Registered successFully.')
+      } else {
+        toast.error(data)
+      }
     } catch (error) {
       console.log(error)
     }
@@ -154,7 +182,7 @@ const FormLayoutsSeparator = () => {
                   value={values.password}
                   onChange={handleChange('password')}
                   id='form-layouts-separator-password'
-                  type={values.showPassword ? 'text' : 'password'}
+                  type={values.password ? 'text' : 'password'}
                   endAdornment={
                     <InputAdornment position='end'>
                       <IconButton

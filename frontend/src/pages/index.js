@@ -22,15 +22,18 @@ import { useEffect } from 'react'
 import { useAuth } from 'src/context/AuthContext'
 
 const Dashboard = () => {
-  const { isLogin } = useAuth()
+  const { isLogin, role } = useAuth()
 
   const router = useRouter()
 
   useEffect(() => {
     if (!isLogin) {
       router.push('/login')
+      console.log(role)
+    } else {
+      console.log(role)
     }
-  }, [isLogin, router])
+  }, [router])
 
   return (
     <ApexChartWrapper>

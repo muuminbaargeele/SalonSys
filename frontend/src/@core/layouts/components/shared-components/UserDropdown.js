@@ -23,6 +23,8 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import MessageOutline from 'mdi-material-ui/MessageOutline'
 import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
+import { useAuth } from 'src/context/AuthContext'
+
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
   width: 8,
@@ -38,6 +40,8 @@ const UserDropdown = () => {
 
   // ** Hooks
   const router = useRouter()
+
+  const { setIsLogin } = useAuth()
 
   const handleDropdownOpen = event => {
     setAnchorEl(event.currentTarget)
@@ -62,6 +66,12 @@ const UserDropdown = () => {
       fontSize: '1.375rem',
       color: 'text.secondary'
     }
+  }
+
+  const handleLogout = () => {
+    localStorage.setItem('isLogin', 'false')
+    setIsLogin(false)
+    router.push('/login')
   }
 
   return (
@@ -112,7 +122,7 @@ const UserDropdown = () => {
             Profile
           </Box>
         </MenuItem>
-        <MenuItem sx={{ py: 2 }} onClick={() => handleDropdownClose('/login')}>
+        <MenuItem sx={{ py: 2 }} onClick={() => handleLogout()}>
           <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
           Logout
         </MenuItem>
