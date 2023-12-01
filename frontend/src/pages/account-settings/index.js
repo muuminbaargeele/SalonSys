@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -18,6 +18,10 @@ import TabAccount from 'src/views/account-settings/TabAccount'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
+import { useRouter } from 'next/router'
+import { useAuth } from 'src/context/AuthContext'
+import TabSecurity from 'src/views/account-settings/TabSecurity'
+import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 
 const Tab = styled(MuiTab)(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
@@ -45,6 +49,19 @@ const AccountSettings = () => {
     setValue(newValue)
   }
 
+  const { isLogin, role } = useAuth()
+
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLogin) {
+      router.push('/login')
+      console.log(role)
+    } else {
+      console.log(role)
+    }
+  }, [router])
+
   return (
     <Card>
       <TabContext value={value}>
@@ -62,10 +79,22 @@ const AccountSettings = () => {
               </Box>
             }
           />
+          <Tab
+            value='security'
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <LockOpenOutline />
+                <TabName>Security</TabName>
+              </Box>
+            }
+          />
         </TabList>
 
         <TabPanel sx={{ p: 0 }} value='account'>
           <TabAccount />
+        </TabPanel>
+        <TabPanel sx={{ p: 0 }} value='security'>
+          <TabSecurity />
         </TabPanel>
       </TabContext>
     </Card>

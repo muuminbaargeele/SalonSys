@@ -50,7 +50,7 @@ const LoginPage = () => {
   const theme = useTheme()
   const router = useRouter()
 
-  const { login } = useAuth()
+  const { login, isLoading } = useAuth()
 
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
@@ -188,7 +188,7 @@ const LoginPage = () => {
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             ></Box>
             <Button type='submit' fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }}>
-              Login
+              {isLoading ? 'Processing...' : 'Login'}
             </Button>
           </form>
         </CardContent>

@@ -68,8 +68,8 @@ const UserDropdown = () => {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.setItem('isLogin', 'false')
+  const logout = () => {
+    localStorage.clear()
     setIsLogin(false)
     router.push('/login')
   }
@@ -122,7 +122,7 @@ const UserDropdown = () => {
             Profile
           </Box>
         </MenuItem>
-        <MenuItem sx={{ py: 2 }} onClick={() => handleLogout()}>
+        <MenuItem sx={{ py: 2 }} onClick={logout}>
           <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
           Logout
         </MenuItem>

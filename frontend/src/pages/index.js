@@ -22,7 +22,7 @@ import { useEffect } from 'react'
 import { useAuth } from 'src/context/AuthContext'
 
 const Dashboard = () => {
-  const { isLogin, role } = useAuth()
+  const { isLogin, role, username } = useAuth()
 
   const router = useRouter()
 
@@ -30,8 +30,10 @@ const Dashboard = () => {
     if (!isLogin) {
       router.push('/login')
       console.log(role)
+      console.log(username)
     } else {
       console.log(role)
+      console.log(username)
     }
   }, [router])
 
