@@ -15,34 +15,38 @@ import DotsVertical from 'mdi-material-ui/DotsVertical'
 import Import from 'mdi-material-ui/Import'
 import History from 'mdi-material-ui/History'
 
-const salesData = [
-  {
-    stats: '24',
-    title: 'Total Salons',
-    color: 'primary',
-    icon: <HomeModern sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '9',
-    title: 'Recent Salons',
-    color: 'success',
-    icon: <History sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '499',
-    color: 'warning',
-    title: 'Total requests',
-    icon: <Import sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '$3k',
-    color: 'info',
-    title: 'Total Income',
-    icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
-  }
-]
+import FetchOverviewData from 'src/hooks/FetchOverviewData'
 
 const renderStats = () => {
+  const { overview } = FetchOverviewData()
+
+  const salesData = [
+    {
+      stats: overview.totalSalon,
+      title: 'Total Salons',
+      color: 'primary',
+      icon: <HomeModern sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: overview.recentSalons,
+      title: 'Recent Salons',
+      color: 'success',
+      icon: <History sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: overview.totalRequests,
+      color: 'warning',
+      title: 'Total requests',
+      icon: <Import sx={{ fontSize: '1.75rem' }} />
+    },
+    {
+      stats: overview.totalAmount,
+      color: 'info',
+      title: 'Total Amount',
+      icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
+    }
+  ]
+
   return salesData.map((item, index) => (
     <Grid item xs={12} sm={3} key={index}>
       <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>

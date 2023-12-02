@@ -101,7 +101,11 @@ const TabSecurity = () => {
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)
-        setValues('')
+        setValues({
+          currentPassword: '',
+          newPassword: '',
+          confirmNewPassword: ''
+        })
       } else {
         toast.error(data)
       }

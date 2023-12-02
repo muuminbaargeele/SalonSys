@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 // ** Next Import
 import { useRouter } from 'next/router'
@@ -7,19 +7,19 @@ import { useRouter } from 'next/router'
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Select from '@mui/material/Select'
 import { styled } from '@mui/material/styles'
-import MenuItem from '@mui/material/MenuItem'
 import TextField from '@mui/material/TextField'
-import InputLabel from '@mui/material/InputLabel'
 import CardContent from '@mui/material/CardContent'
-import FormControl from '@mui/material/FormControl'
 import Button from '@mui/material/Button'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 
 import { useAuth } from 'src/context/AuthContext'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+
+import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 
 // ** Icons Imports
 
@@ -33,15 +33,10 @@ const ImgStyled = styled('img')(({ theme }) => ({
 const TabAccount = () => {
   // ** State
   const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
-  const [values, setValues] = useState({
-    name: '',
-    username: '',
-    role: '',
-    status: ''
-  })
-  const [isLoading, setIsLoading] = useState(false)
 
-  const { setIsLogin } = useAuth()
+  const { values, setValues, isLoading } = FetchLoggedUserInfo()
+
+  const { setIsLogin, role } = useAuth()
 
   // ** Hooks
   const router = useRouter()
@@ -56,48 +51,36 @@ const TabAccount = () => {
     router.push('/login')
   }
 
-  useEffect(() => {
-    const fetchLoggedUser = async () => {
-      const params = new URLSearchParams()
-      const currUsername = localStorage.getItem('username')
-      params.append('Username', currUsername)
-
-      const requestData = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      }
-
-      setIsLoading(true)
-      try {
-        const response = await axios.post(
-          'https://salonsys.000webhostapp.com/backend/api/get_admins.php',
-          params,
-          requestData
-        )
-        const data = await response.data[0]
-        setValues({
-          name: data.Name || '',
-          username: data.Username || '',
-          role: data.Role || '',
-          status: data.Status || ''
-        })
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchLoggedUser()
-  }, [])
-
-  const updateMainAdminNameAndUsername = async event => {
+  const updateLoggedUserInfo = async event => {
     event.preventDefault()
 
-    if (!values.name || !values.username) return toast.error('Please fill inputFields.')
+    if (values.role == 'MainAdmin') {
+      if (!values.name || !values.username) return toast.error('Please fill inputFields.')
+    } else if (values.role == 'SalonAdmin') {
+      if (!values.name || !values.username || !values.phone || !values.salonAddress)
+        return toast.error('Please fill inputFields.')
+    } else {
+      if (!values.name || !values.username || !values.phone) return toast.error('Please fill inputFields.')
+    }
+
+    const currUsername = window.localStorage.getItem('username')
 
     const params = new URLSearchParams()
-    params.append('Name', values.name)
-    params.append('Username', values.username)
+    params.append('Username', currUsername)
+    if (values.role == 'MainAdmin') {
+      params.append('Name', values.name)
+      params.append('NewUsername', values.username)
+    } else if (values.role == 'SalonAdmin') {
+      params.append('Name', values.name)
+      params.append('NewUsername', values.username)
+      params.append('Phone', values.phone)
+      params.append('Address', values.salonAddress)
+    } else {
+      params.append('Name', values.name)
+      params.append('NewUsername', values.username)
+      params.append('Phone', values.phone)
+      params.append('Address', values.salonAddress)
+    }
 
     const requestData = {
       method: 'POST',
@@ -105,8 +88,17 @@ const TabAccount = () => {
     }
 
     try {
-      const response = await axios.post('', params, requestData)
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/update_admins.php',
+        params,
+        requestData
+      )
       const data = await response.data
+      if (data == 'Success') {
+        toast.success(data)
+      } else {
+        toast.error(data)
+      }
     } catch (error) {
       console.log(error)
     }
@@ -114,7 +106,7 @@ const TabAccount = () => {
 
   return (
     <CardContent>
-      <form onSubmit={updateMainAdminNameAndUsername}>
+      <form onSubmit={updateLoggedUserInfo}>
         <Grid container spacing={7}>
           <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -141,6 +133,16 @@ const TabAccount = () => {
               onChange={handleChange('username')}
             />
           </Grid>
+          {role == 'SalonAdmin' && (
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label='Phone'
+                value={isLoading ? 'Loading...' : values.phone}
+                onChange={handleChange('phone')}
+              />
+            </Grid>
+          )}
           <Grid item xs={12} sm={6}>
             <TextField
               style={{ pointerEvents: 'none' }}
@@ -160,6 +162,40 @@ const TabAccount = () => {
               onChange={handleChange('status')}
             />
           </Grid>
+
+          <Grid item xs={12}>
+            <Divider sx={{ marginBottom: 0 }} />
+          </Grid>
+
+          {role == 'MainAdmin' ? null : (
+            <>
+              <Grid item xs={12}>
+                <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                  Salon Info
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  style={{ pointerEvents: 'none' }}
+                  fullWidth
+                  label='Salon Name'
+                  value={isLoading ? 'Loading...' : values.salonName}
+                  onChange={handleChange('salonName')}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  style={{ pointerEvents: values.role == 'SalonUser' ? 'none' : 'auto' }}
+                  fullWidth
+                  label='Salon Address'
+                  value={isLoading ? 'Loading...' : values.salonAddress}
+                  onChange={handleChange('salonAddress')}
+                />
+              </Grid>
+            </>
+          )}
+
           <Grid item xs={12}>
             <Button type='submit' variant='contained' sx={{ marginRight: 3.5 }} onClick={() => {}}>
               Save Changes

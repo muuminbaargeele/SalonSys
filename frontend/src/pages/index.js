@@ -20,8 +20,11 @@ import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import { useEffect } from 'react'
 
 import { useAuth } from 'src/context/AuthContext'
+import FetchOverviewData from 'src/hooks/FetchOverviewData'
 
 const Dashboard = () => {
+  const { overview } = FetchOverviewData()
+
   const { isLogin, role, username } = useAuth()
 
   const router = useRouter()
@@ -46,10 +49,20 @@ const Dashboard = () => {
         <Grid item xs={12} md={6} lg={4}>
           <Grid container spacing={6}>
             <Grid item xs={6}>
-              <CardStatisticsVerticalComponent stats='14' icon={<CheckBold />} color='success' title='Active Salons' />
+              <CardStatisticsVerticalComponent
+                stats={overview.activeSalons}
+                icon={<CheckBold />}
+                color='success'
+                title='Active Salons'
+              />
             </Grid>
             <Grid item xs={6}>
-              <CardStatisticsVerticalComponent stats='10' trend='negative' title='inActive Salons' icon={<Cancel />} />
+              <CardStatisticsVerticalComponent
+                stats={overview.inActiveSalons}
+                trend='negative'
+                title='inActive Salons'
+                icon={<Cancel />}
+              />
             </Grid>
           </Grid>
         </Grid>

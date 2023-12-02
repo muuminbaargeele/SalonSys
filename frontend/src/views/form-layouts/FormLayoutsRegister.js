@@ -27,6 +27,8 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
 import axios from 'axios'
 
+import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
+
 const FormLayoutsSeparator = () => {
   const [values, setValues] = useState({
     ownerName: '',
@@ -36,9 +38,11 @@ const FormLayoutsSeparator = () => {
     password: '',
     username: '',
     salonName: '',
-    address: ''
+    address: '',
+    shift: ''
   })
 
+  const { values: currentUserInfo } = FetchLoggedUserInfo()
   // Handle Change
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
@@ -55,17 +59,22 @@ const FormLayoutsSeparator = () => {
   const handleSubmit = async event => {
     event.preventDefault()
 
-    if (
-      !values.address ||
-      !values.amount ||
-      !values.ownerName ||
-      !values.password ||
-      !values.phone ||
-      !values.role ||
-      !values.salonName ||
-      !values.username
-    )
-      return toast.error('Fill all inputfields.')
+    if (currentUserInfo.role == 'MainAdmin') {
+      if (
+        !values.address ||
+        !values.amount ||
+        !values.ownerName ||
+        !values.password ||
+        !values.phone ||
+        !values.role ||
+        !values.salonName ||
+        !values.username
+      )
+        return toast.error('Fill all inputfields.')
+    } else {
+      if (!values.ownerName || !values.username || !values.phone || !values.role || !values.shift || !values.password)
+        return toast.error('Fill all inputfields.')
+    }
 
     const currentDate = new Date()
     const currentYear = currentDate.getFullYear()
@@ -76,16 +85,24 @@ const FormLayoutsSeparator = () => {
     const currentSecond = currentDate.getSeconds()
     const date = `${currentYear}-${currentMonth}-${currentDay} ${currentHour}:${currentMinute}:${currentSecond}`
 
+    const currUsername = window.localStorage.getItem('username')
+
     const params = new URLSearchParams()
+    params.append('Username', currUsername)
+    params.append('CreateDT', date)
     params.append('Name', values.ownerName)
-    params.append('Username', values.username)
+    params.append('NewUsername', values.username)
     params.append('Phone', values.phone)
     params.append('Role', values.role)
-    params.append('Amount', values.amount)
     params.append('Password', values.password)
-    params.append('SalonName', values.salonName)
-    params.append('Address', values.address)
-    params.append('CreateDT', date)
+
+    if (currentUserInfo.role == 'MainAdmin') {
+      params.append('Amount', values.amount)
+      params.append('SalonName', values.salonName)
+      params.append('Address', values.address)
+    } else {
+      params.append('Shift', values.shift)
+    }
 
     const requestData = {
       method: 'POST',
@@ -94,13 +111,23 @@ const FormLayoutsSeparator = () => {
 
     try {
       const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/mainadmin/registersalon.php',
+        'https://salonsys.000webhostapp.com/backend/api/register.php',
         params,
         requestData
       )
       const data = await response.data
-      if (data == 'success') {
-        toast.success('Registered successFully.')
+      if (data == 'Success') {
+        toast.success(data)
+        setValues({
+          ownerName: '',
+          phone: '',
+          role: '',
+          amount: '',
+          password: '',
+          username: '',
+          salonName: '',
+          address: ''
+        })
       } else {
         toast.error(data)
       }
@@ -124,7 +151,7 @@ const FormLayoutsSeparator = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label='Owner Name'
+                label={currentUserInfo.role == 'MainAdmin' ? 'Owner Name' : 'Name'}
                 placeholder='cali'
                 value={values.ownerName}
                 onChange={handleChange('ownerName')}
@@ -160,20 +187,44 @@ const FormLayoutsSeparator = () => {
                   value={values.role}
                   onChange={handleChange('role')}
                 >
-                  <MenuItem value='SalonAdmin'>SalonAdmin</MenuItem>
+                  {currentUserInfo.role == 'MainAdmin' ? (
+                    <MenuItem value='SalonAdmin'>SalonAdmin</MenuItem>
+                  ) : (
+                    <MenuItem value='SalonAdmin'>SalonUser</MenuItem>
+                  )}
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                type='number'
-                fullWidth
-                label='Amount'
-                placeholder='00.00'
-                value={values.amount}
-                onChange={handleChange('amount')}
-              />
-            </Grid>
+            {currentUserInfo.role == 'SalonAdmin' ? (
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel id='form-layouts-separator-select-label'>Shift</InputLabel>
+                  <Select
+                    label='Shift'
+                    defaultValue=''
+                    id='form-layouts-separator-select'
+                    labelId='form-layouts-separator-select-label'
+                    value={values.shift}
+                    onChange={handleChange('shift')}
+                  >
+                    <MenuItem value='Day Shift'>Day Shift</MenuItem>
+                    <MenuItem value='Night Shift'>Night Shift</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            ) : null}
+            {currentUserInfo.role == 'MainAdmin' ? (
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  type='number'
+                  fullWidth
+                  label='Amount'
+                  placeholder='00.00'
+                  value={values.amount}
+                  onChange={handleChange('amount')}
+                />
+              </Grid>
+            ) : null}
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-separator-password'>Password</InputLabel>
@@ -198,32 +249,36 @@ const FormLayoutsSeparator = () => {
                 />
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
-              <Divider sx={{ marginBottom: 0 }} />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant='body2' sx={{ fontWeight: 600 }}>
-                2. Salon Info
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label='Salon Name'
-                placeholder='UbaxSalon'
-                value={values.salonName}
-                onChange={handleChange('salonName')}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label='Address'
-                placeholder='Taleex'
-                value={values.address}
-                onChange={handleChange('address')}
-              />
-            </Grid>
+            {currentUserInfo.role == 'MainAdmin' ? (
+              <>
+                <Grid item xs={12}>
+                  <Divider sx={{ marginBottom: 0 }} />
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                    2. Salon Info
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Salon Name'
+                    placeholder='UbaxSalon'
+                    value={values.salonName}
+                    onChange={handleChange('salonName')}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Address'
+                    placeholder='Taleex'
+                    value={values.address}
+                    onChange={handleChange('address')}
+                  />
+                </Grid>
+              </>
+            ) : null}
           </Grid>
         </CardContent>
         <Divider sx={{ margin: 0 }} />
