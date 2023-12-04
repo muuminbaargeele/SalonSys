@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** Next Imports
 import { useRouter } from 'next/router'
@@ -50,7 +50,7 @@ const LoginPage = () => {
   const theme = useTheme()
   const router = useRouter()
 
-  const { login, isLoading } = useAuth()
+  const { login, isLoading, isLogin, username } = useAuth()
 
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
@@ -68,6 +68,13 @@ const LoginPage = () => {
     event.preventDefault()
     login(values.username, values.password)
   }
+
+  useEffect(() => {
+    if (isLogin) {
+      router.push('/')
+      console.log(username)
+    }
+  }, [router])
 
   return (
     <Box className='content-center'>

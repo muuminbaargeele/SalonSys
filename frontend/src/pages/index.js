@@ -21,21 +21,22 @@ import { useEffect } from 'react'
 
 import { useAuth } from 'src/context/AuthContext'
 import FetchOverviewData from 'src/hooks/FetchOverviewData'
+import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
+// import BasicDateTimePicker from './../views/date-time-picker/DateTimePicker'
 
 const Dashboard = () => {
-  const { overview } = FetchOverviewData()
+  const { overview, isLoading } = FetchOverviewData()
+  const { values } = FetchLoggedUserInfo()
 
-  const { isLogin, role, username } = useAuth()
+  const { isLogin, username } = useAuth()
 
   const router = useRouter()
 
   useEffect(() => {
     if (!isLogin) {
       router.push('/login')
-      console.log(role)
       console.log(username)
     } else {
-      console.log(role)
       console.log(username)
     }
   }, [router])
@@ -50,22 +51,25 @@ const Dashboard = () => {
           <Grid container spacing={6}>
             <Grid item xs={6}>
               <CardStatisticsVerticalComponent
-                stats={overview.activeSalons}
+                stats={isLoading ? '...' : values.role == 'MainAdmin' ? overview.activeSalons : overview.Services}
                 icon={<CheckBold />}
                 color='success'
-                title='Active Salons'
+                title={`${values.role == 'MainAdmin' ? 'Active Salons' : 'Services'}`}
               />
             </Grid>
             <Grid item xs={6}>
               <CardStatisticsVerticalComponent
-                stats={overview.inActiveSalons}
+                stats={isLoading ? '...' : values.role == 'MainAdmin' ? overview.inActiveSalons : overview.Pending}
                 trend='negative'
-                title='inActive Salons'
+                title={`${values.role == 'MainAdmin' ? 'inActive Salons' : 'Pending'}`}
                 icon={<Cancel />}
               />
             </Grid>
           </Grid>
         </Grid>
+        {/* <Grid item xs={12}>
+          <BasicDateTimePicker />
+        </Grid> */}
         <Grid item xs={12}>
           <Table />
         </Grid>

@@ -65,6 +65,32 @@ const navigation = () => {
         path: '/manage'
       }
     ]
+  } else {
+    return [
+      {
+        title: 'Dashboard',
+        icon: HomeOutline,
+        path: '/'
+      },
+      {
+        title: 'Account Settings',
+        icon: AccountCogOutline,
+        path: '/account-settings'
+      },
+      {
+        sectionTitle: 'Pages'
+      },
+      {
+        title: 'Requests',
+        icon: AccountPlusOutline,
+        path: '/requests'
+      },
+      {
+        title: 'Manage',
+        icon: AccountGroupOutline,
+        path: '/manage'
+      }
+    ]
   }
 }
 

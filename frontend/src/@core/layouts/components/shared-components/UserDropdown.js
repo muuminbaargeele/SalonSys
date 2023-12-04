@@ -15,15 +15,11 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
 // ** Icons Imports
-import CogOutline from 'mdi-material-ui/CogOutline'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 
 import { useAuth } from 'src/context/AuthContext'
+import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -42,6 +38,8 @@ const UserDropdown = () => {
   const router = useRouter()
 
   const { setIsLogin } = useAuth()
+
+  const { values } = FetchLoggedUserInfo()
 
   const handleDropdownOpen = event => {
     setAnchorEl(event.currentTarget)
@@ -108,9 +106,9 @@ const UserDropdown = () => {
               <Avatar alt='John Doe' src='/images/avatars/1.png' sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>Mohamed Omer</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{values.name}</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
-                MainAdmin
+                {values.role}
               </Typography>
             </Box>
           </Box>

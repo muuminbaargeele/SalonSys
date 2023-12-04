@@ -7,9 +7,13 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useAuth } from 'src/context/AuthContext'
+import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 
 const Register = () => {
   const { isLogin, username } = useAuth()
+
+  const { values } = FetchLoggedUserInfo()
+  console.log('role:', values.role)
 
   const router = useRouter()
 
@@ -17,9 +21,12 @@ const Register = () => {
     if (!isLogin) {
       router.push('/login')
     } else {
-      console.log(username)
+      if (values.role == 'SalonUser') {
+        router.push('/pages/error')
+      }
+      console.log(values.role)
     }
-  }, [router])
+  }, [router, values])
 
   return (
     <Card>

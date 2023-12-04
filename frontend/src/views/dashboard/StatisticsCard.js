@@ -16,33 +16,37 @@ import Import from 'mdi-material-ui/Import'
 import History from 'mdi-material-ui/History'
 
 import FetchOverviewData from 'src/hooks/FetchOverviewData'
+import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 
 const renderStats = () => {
-  const { overview } = FetchOverviewData()
+  const { values } = FetchLoggedUserInfo()
+  const { overview, isLoading } = FetchOverviewData()
 
   const salesData = [
     {
-      stats: overview.totalSalon,
-      title: 'Total Salons',
+      stats: isLoading ? '...' : values.role == 'MainAdmin' ? overview.totalSalon : overview.TotalCustomers,
+      title: values.role == 'MainAdmin' ? 'Total Salons' : 'Customers',
       color: 'primary',
       icon: <HomeModern sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: overview.recentSalons,
-      title: 'Recent Salons',
+      stats: isLoading ? '...' : values.role == 'MainAdmin' ? overview.recentSalons : overview.RecentCustomers,
+      title: values.role == 'MainAdmin' ? 'Recent Salons' : 'New Customers',
       color: 'success',
       icon: <History sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: overview.totalRequests,
+      stats: isLoading ? '...' : values.role == 'MainAdmin' ? overview.totalRequests : overview.TotalSalonRequests,
       color: 'warning',
-      title: 'Total requests',
+      title: 'requests',
       icon: <Import sx={{ fontSize: '1.75rem' }} />
     },
     {
-      stats: overview.totalAmount,
+      stats: `${
+        isLoading ? '...' : values.role == 'MainAdmin' ? `$${overview.totalAmount}` : `$${overview.TotalPrice}`
+      }`,
       color: 'info',
-      title: 'Total Amount',
+      title: values.role == 'MainAdmin' ? 'Total Amount' : ' Price',
       icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
     }
   ]

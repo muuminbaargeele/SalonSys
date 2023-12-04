@@ -56,7 +56,7 @@ const FormLayoutsSeparator = () => {
     event.preventDefault()
   }
 
-  const handleSubmit = async event => {
+  const handleRegister = async event => {
     event.preventDefault()
 
     if (currentUserInfo.role == 'MainAdmin') {
@@ -140,7 +140,7 @@ const FormLayoutsSeparator = () => {
     <Card>
       <CardHeader title='Register New User' titleTypographyProps={{ variant: 'h6' }} />
       <Divider sx={{ margin: 0 }} />
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleRegister}>
         <CardContent>
           <Grid container spacing={5}>
             <Grid item xs={12}>
@@ -190,7 +190,7 @@ const FormLayoutsSeparator = () => {
                   {currentUserInfo.role == 'MainAdmin' ? (
                     <MenuItem value='SalonAdmin'>SalonAdmin</MenuItem>
                   ) : (
-                    <MenuItem value='SalonAdmin'>SalonUser</MenuItem>
+                    <MenuItem value='SalonUser'>SalonUser</MenuItem>
                   )}
                 </Select>
               </FormControl>

@@ -17,7 +17,6 @@ import Divider from '@mui/material/Divider'
 import Switch from '@mui/material/Switch'
 import { Box, CardActions, Grid, IconButton, InputAdornment, TextField, useMediaQuery } from '@mui/material'
 import Magnify from 'mdi-material-ui/Magnify'
-import { Chip } from 'mdi-material-ui'
 
 const columns = [
   { id: 'id', label: '#', minWidth: 50 },

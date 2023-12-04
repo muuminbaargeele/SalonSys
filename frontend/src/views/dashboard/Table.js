@@ -11,29 +11,101 @@ import Typography from '@mui/material/Typography'
 import TableContainer from '@mui/material/TableContainer'
 import { CardActions, CardHeader, Divider, InputAdornment, TextField } from '@mui/material'
 import Magnify from 'mdi-material-ui/Magnify'
-
-const rows = [
-  {
-    date: '09/23/2016',
-    phone: '0617675645',
-    status: 'InActive',
-    name: 'Hassan',
-    salonName: 'Ubax Beauty Salon'
-  },
-  {
-    date: '09/23/2016',
-    phone: '0617675647',
-    status: 'Active',
-    name: 'Khalid',
-    salonName: 'Khalid'
-  }
-]
+import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import toast from 'react-hot-toast'
 
 const DashboardTable = props => {
   const { hidden, hiddenSm } = props
+
+  const [rowsData, setRowsData] = useState([])
+  const [inputValue, setInputValue] = useState('')
+
+  const { values } = FetchLoggedUserInfo()
+
+  let rows = []
+
+  if (values.role == 'MainAdmin') {
+    rows = [
+      {
+        SalonName: 'Hassan',
+        ownerName: 'Hassan',
+        address: 'taleh',
+        phone: '0617675645',
+        status: 'InActive',
+        remaining: 4
+      }
+    ]
+  } else {
+    rows = [
+      {
+        name: 'Hassan',
+        phone: '0617675645',
+        title: 'Cilan',
+        subTitle: 'Cilan marin',
+        price: 30,
+        que: 3,
+        arrivalTime: 'tomorow',
+        date: '09/23/2016',
+        status: 'InActive'
+      }
+    ]
+  }
+
+  const fetchOverviewTableData = async () => {
+    const requestData = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+
+    const currentLoggedUser = window.localStorage.getItem('username')
+
+    const params = new URLSearchParams()
+    params.append('Username', currentLoggedUser)
+    try {
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/get_dashtable.php',
+        params,
+        requestData
+      )
+      const data = await response.data
+      if (data) {
+        setRowsData(data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchOverviewTableData()
+  }, [])
+
+  const handleSearch = event => {
+    const searchValue = event.target.value
+    setInputValue(searchValue)
+
+    const filteredResults = rowsData.filter(el =>
+      Object.values(el).some(
+        value => value && typeof value === 'string' && value.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    )
+
+    if (inputValue === '' || inputValue.length == 1) {
+      fetchOverviewTableData()
+    } else {
+      if (filteredResults.length <= 0) {
+        fetchOverviewTableData()
+        toast.error('Not found')
+      }
+      setRowsData(filteredResults)
+    }
+  }
+
   return (
     <Card>
-      <CardActions sx={{height:60}} >
+      <CardActions sx={{ height: 60 }}>
         <Box
           sx={{
             width: '100%',
@@ -55,7 +127,8 @@ const DashboardTable = props => {
               </IconButton>
             ) : null}
             <TextField
-              onChange={() => {}}
+              onChange={handleSearch}
+              value={inputValue}
               size='small'
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
               InputProps={{
@@ -74,36 +147,91 @@ const DashboardTable = props => {
         <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
           <TableHead>
             <TableRow>
-              <TableCell>Salon Name</TableCell>
-              <TableCell>Owner Name</TableCell>
-              <TableCell>Owner Phone</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Status</TableCell>
+              {values.role == 'MainAdmin' ? (
+                // Main Admin
+                <>
+                  <TableCell>Salon Name</TableCell>
+                  <TableCell>Owner Name</TableCell>
+                  <TableCell>Address</TableCell>
+                  <TableCell>Phone</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Remaining</TableCell>
+                </>
+              ) : (
+                // Salon Admin
+                <>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Phone</TableCell>
+                  <TableCell>Title</TableCell>
+                  <TableCell>SubTitle</TableCell>
+                  <TableCell>Price</TableCell>
+                  <TableCell>Que No.</TableCell>
+                  <TableCell>ArrivalTime</TableCell>
+                  <TableCell>Status</TableCell>
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => (
-              <TableRow hover key={row.name} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
-                <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                    <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>{row.name}</Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>{row.salonName}</TableCell>
-                <TableCell>{row.date}</TableCell>
-                <TableCell>{row.phone}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={row.status}
-                    color={row.status == 'Active' ? 'success' : 'error'}
-                    sx={{
-                      height: 24,
-                      fontSize: '0.75rem',
-                      textTransform: 'capitalize',
-                      '& .MuiChip-label': { fontWeight: 500 }
-                    }}
-                  />
-                </TableCell>
+            {rowsData.map((row, index) => (
+              <TableRow hover key={`${row.id}-${index}`} sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}>
+                {values.role == 'MainAdmin' ? (
+                  <>
+                    {/* Main admin */}
+                    <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+                          {row.SalonName}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{row.Name}</TableCell>
+                    <TableCell>{row.Address}</TableCell>
+                    <TableCell>{row.Phone}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={row.Status == 1 ? 'Active' : 'In Active'}
+                        color={row.Status == 1 ? 'success' : 'error'}
+                        sx={{
+                          height: 24,
+                          fontSize: '0.75rem',
+                          textTransform: 'capitalize',
+                          '& .MuiChip-label': { fontWeight: 500 }
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>{`${row.Remaining} days`}</TableCell>
+                  </>
+                ) : (
+                  <>
+                    {/* Salon Admin */}
+                    <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+                          {row.CustomerName}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{row.CustomerPhone}</TableCell>
+                    <TableCell>{row.Title}</TableCell>
+                    <TableCell>{row.SubTitle}</TableCell>
+                    <TableCell>{row.Price}</TableCell>
+                    <TableCell>{row.QueNO}</TableCell>
+                    <TableCell>{row.ArrivalTime}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={row.Status == 0 ? 'Not Started' : row.Status == 1 ? 'In Progress' : 'Done'}
+                        color={row.Status == 0 ? 'secondary' : row.Status == 1 ? 'info' : 'success'}
+                        sx={{
+                          height: 24,
+                          fontSize: '0.75rem',
+                          textTransform: 'capitalize',
+                          '& .MuiChip-label': { fontWeight: 500 }
+                        }}
+                      />
+                    </TableCell>
+                  </>
+                )}
               </TableRow>
             ))}
           </TableBody>

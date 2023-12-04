@@ -36,7 +36,7 @@ const TabAccount = () => {
 
   const { values, setValues, isLoading } = FetchLoggedUserInfo()
 
-  const { setIsLogin, role } = useAuth()
+  const { setIsLogin } = useAuth()
 
   // ** Hooks
   const router = useRouter()
@@ -133,7 +133,7 @@ const TabAccount = () => {
               onChange={handleChange('username')}
             />
           </Grid>
-          {role == 'SalonAdmin' && (
+          {values.role == 'SalonAdmin' && (
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -167,7 +167,7 @@ const TabAccount = () => {
             <Divider sx={{ marginBottom: 0 }} />
           </Grid>
 
-          {role == 'MainAdmin' ? null : (
+          {values.role == 'MainAdmin' ? null : (
             <>
               <Grid item xs={12}>
                 <Typography variant='body2' sx={{ fontWeight: 600 }}>
