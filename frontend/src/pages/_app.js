@@ -29,6 +29,7 @@ import '../../styles/globals.css'
 
 // ** Contexts
 import { AuthContextProvider } from 'src/context/AuthContext'
+import { useEffect } from 'react'
 
 const clientSideEmotionCache = createEmotionCache()
 
@@ -51,6 +52,18 @@ const App = props => {
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
+
+  // useEffect(() => {
+  //   const clearLocalStorage = () => {
+  //     localStorage.clear()
+  //   }
+
+  //   window.addEventListener('beforeunload', clearLocalStorage)
+
+  //   return () => {
+  //     window.addEventListener('beforeunload', clearLocalStorage)
+  //   }
+  // }, [])
 
   return (
     <CacheProvider value={emotionCache}>

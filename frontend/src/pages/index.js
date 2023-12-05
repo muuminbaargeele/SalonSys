@@ -3,6 +3,8 @@ import Grid from '@mui/material/Grid'
 
 // ** Icons Imports
 import CheckBold from 'mdi-material-ui/CheckBold'
+import FaceAgent from 'mdi-material-ui/FaceAgent'
+import ProgressQuestion from 'mdi-material-ui/ProgressQuestion'
 import Cancel from 'mdi-material-ui/Cancel'
 
 // ** Next Import
@@ -25,9 +27,6 @@ import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 // import BasicDateTimePicker from './../views/date-time-picker/DateTimePicker'
 
 const Dashboard = () => {
-  const { overview, isLoading } = FetchOverviewData()
-  const { values } = FetchLoggedUserInfo()
-
   const { isLogin, username } = useAuth()
 
   const router = useRouter()
@@ -35,11 +34,13 @@ const Dashboard = () => {
   useEffect(() => {
     if (!isLogin) {
       router.push('/login')
-      console.log(username)
     } else {
       console.log(username)
     }
   }, [router])
+
+  const { overview, isLoading } = FetchOverviewData()
+  const { values } = FetchLoggedUserInfo()
 
   return (
     <ApexChartWrapper>
@@ -52,7 +53,7 @@ const Dashboard = () => {
             <Grid item xs={6}>
               <CardStatisticsVerticalComponent
                 stats={isLoading ? '...' : values.role == 'MainAdmin' ? overview.activeSalons : overview.Services}
-                icon={<CheckBold />}
+                icon={values.role == 'MainAdmin' ? <CheckBold /> : <FaceAgent />}
                 color='success'
                 title={`${values.role == 'MainAdmin' ? 'Active Salons' : 'Services'}`}
               />
@@ -62,7 +63,7 @@ const Dashboard = () => {
                 stats={isLoading ? '...' : values.role == 'MainAdmin' ? overview.inActiveSalons : overview.Pending}
                 trend='negative'
                 title={`${values.role == 'MainAdmin' ? 'inActive Salons' : 'Pending'}`}
-                icon={<Cancel />}
+                icon={values.role == 'MainAdmin' ? <Cancel /> : <ProgressQuestion />}
               />
             </Grid>
           </Grid>

@@ -2,6 +2,7 @@ import { createContext, useContext, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
+import { useEffect } from 'react'
 
 const AuthContext = createContext(null)
 
@@ -47,6 +48,18 @@ export const AuthContextProvider = ({ children }) => {
       setIsLoading(false)
     }
   }
+
+  // useEffect(() => {
+  //   const clearLocalStorage = () => {
+  //     localStorage.clear()
+  //   }
+
+  //   window.addEventListener('beforeunload', clearLocalStorage)
+
+  //   return () => {
+  //     window.addEventListener('beforeunload', clearLocalStorage)
+  //   }
+  // }, [])
 
   const values = { isLogin, login, role, setIsLogin, isLoading }
 

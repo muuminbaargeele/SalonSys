@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Paper from '@mui/material/Paper'
@@ -17,6 +17,8 @@ import Divider from '@mui/material/Divider'
 import Switch from '@mui/material/Switch'
 import { Box, CardActions, Grid, IconButton, InputAdornment, TextField, useMediaQuery } from '@mui/material'
 import Magnify from 'mdi-material-ui/Magnify'
+
+import FetchOverviewTableData from 'src/hooks/FetchOverviewTableData'
 
 const columns = [
   { id: 'id', label: '#', minWidth: 50 },
@@ -97,6 +99,13 @@ const ManageTable = props => {
   // ** Hook
   const hiddenSm = useMediaQuery(theme => theme.breakpoints.down('sm'))
 
+  const { mainManageData, setMainManageData, fetchOverviewTable, rowsData } = FetchOverviewTableData()
+
+  useEffect(() => {
+    fetchOverviewTable()
+    console.log('man:-', mainManageData)
+  }, [])
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -150,7 +159,7 @@ const ManageTable = props => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {mainManageData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
                   {columns.map(column => {
@@ -161,11 +170,40 @@ const ManageTable = props => {
                       const textColor = row.state === '1' ? 'danger' : 'red'
 
                       return (
-                        <TableCell key={column.id} align={column.align}>
-                          <span style={{ color: textColor, fontWeight: 600 }}>
-                            {row.state === '1' ? 'Active' : 'Inactive'}
-                          </span>
-                        </TableCell>
+                        <>
+                          <TableCell key={column.id} align={column.align}>
+                            {row.AdID}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            {row.SalonName}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            {row.Address}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            {row.Name}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            {row.Phone}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            {row.CreateDT}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            {`$${row.Amount}`}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            {row.Remaining}
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            <span style={{ color: textColor, fontWeight: 600 }}>
+                              {row.state === '1' ? 'Active' : 'Inactive'}
+                            </span>
+                          </TableCell>
+                          <TableCell key={column.id} align={column.align}>
+                            actions
+                          </TableCell>
+                        </>
                       )
                     }
 
@@ -174,18 +212,18 @@ const ManageTable = props => {
                       // Apply different colors based on the "state" value
                       const textColor = expaired && 'red'
 
-                      return (
-                        <TableCell key={column.id} align={column.align}>
-                          <span style={{ color: textColor, fontWeight: expaired && 600 }}>{row.remaining}</span>
-                        </TableCell>
-                      )
+                      // return (
+                      //   <TableCell key={column.id} align={column.align}>
+                      //     <span style={{ color: textColor, fontWeight: expaired && 600 }}>{row.Remaining}</span>
+                      //   </TableCell>
+                      // )
                     }
 
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number' ? column.format(value) : value}
-                      </TableCell>
-                    )
+                    // return (
+                    //   <TableCell key={column.id} align={column.align}>
+                    //     {column.format && typeof value === 'number' ? column.format(value) : value}
+                    //   </TableCell>
+                    // )
                   })}
                 </TableRow>
               )

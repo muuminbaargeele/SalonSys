@@ -14,6 +14,7 @@ import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 import Import from 'mdi-material-ui/Import'
 import History from 'mdi-material-ui/History'
+import AccountGroup from 'mdi-material-ui/AccountGroup'
 
 import FetchOverviewData from 'src/hooks/FetchOverviewData'
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
@@ -27,7 +28,12 @@ const renderStats = () => {
       stats: isLoading ? '...' : values.role == 'MainAdmin' ? overview.totalSalon : overview.TotalCustomers,
       title: values.role == 'MainAdmin' ? 'Total Salons' : 'Customers',
       color: 'primary',
-      icon: <HomeModern sx={{ fontSize: '1.75rem' }} />
+      icon:
+        values.role == 'MainAdmin' ? (
+          <HomeModern sx={{ fontSize: '1.75rem' }} />
+        ) : (
+          <AccountGroup sx={{ fontSize: '1.75rem' }} />
+        )
     },
     {
       stats: isLoading ? '...' : values.role == 'MainAdmin' ? overview.recentSalons : overview.RecentCustomers,
@@ -38,7 +44,7 @@ const renderStats = () => {
     {
       stats: isLoading ? '...' : values.role == 'MainAdmin' ? overview.totalRequests : overview.TotalSalonRequests,
       color: 'warning',
-      title: 'requests',
+      title: 'Total Requests',
       icon: <Import sx={{ fontSize: '1.75rem' }} />
     },
     {
@@ -46,7 +52,7 @@ const renderStats = () => {
         isLoading ? '...' : values.role == 'MainAdmin' ? `$${overview.totalAmount}` : `$${overview.TotalPrice}`
       }`,
       color: 'info',
-      title: values.role == 'MainAdmin' ? 'Total Amount' : ' Price',
+      title: values.role == 'MainAdmin' ? 'Total Amount' : 'Total Amount',
       icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
     }
   ]

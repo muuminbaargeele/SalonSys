@@ -55,6 +55,7 @@ const FetchOverviewData = () => {
             inActiveSalons: data[3].inActiveSalons,
             totalRequests: data[4].TotalRequests
           })
+          console.log('sd', data)
         } else {
           // Salon
           data = await response.data[0]
