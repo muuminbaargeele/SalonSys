@@ -24,16 +24,26 @@ const DashboardTable = props => {
   const { hidden, hiddenSm } = props
 
   const [inputValue, setInputValue] = useState('')
-  const [actionValue, setActionValue] = useState('')
+  const [actionValues, setActionValues] = useState({});
+
 
   const { values } = FetchLoggedUserInfo()
 
   const { fetchOverviewTable, rowsData, setRowsData } = FetchOverviewTableData()
 
   const handleActionChange = (event, id) => {
-    setActionValue(event.target.value)
-    console.log('id:-', id)
-  }
+    const selectedValue = event.target.value;
+
+    // Log the selected value for the clicked row
+    console.log(`Row ID: ${id}, Selected Value: ${selectedValue}`);
+    
+
+    // Update the state for the specific row
+    setActionValues((prevValues) => ({
+      ...prevValues,
+      [id]: selectedValue,
+    }));
+  };
 
   useEffect(() => {
     fetchOverviewTable()
@@ -155,14 +165,12 @@ const DashboardTable = props => {
                       <Select
                         id='form-layouts-separator-select'
                         labelId='form-layouts-separator-select-label'
-                        value={actionValue}
-                        onChange={event => {
-                          handleActionChange(event, row.ReqId)
-                        }}
+                        value={actionValues[row.ReqId] || ''}  // Use actionValues[row.ReqId]
+                        onChange={(event) => handleActionChange(event, row.ReqId)}
                       >
-                        <MenuItem value='Not Started'>Not Started</MenuItem>
-                        <MenuItem value='Progress'>Progress</MenuItem>
-                        <MenuItem value='Done'>Done</MenuItem>
+                        <MenuItem value='0'>Not Started</MenuItem>
+                        <MenuItem value='1'>Progress</MenuItem>
+                        <MenuItem value='2'>Done</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
