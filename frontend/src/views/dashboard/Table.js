@@ -24,35 +24,6 @@ const DashboardTable = props => {
   const { values } = FetchLoggedUserInfo()
   const { fetchOverviewTable, rowsData, setRowsData } = FetchOverviewTableData()
 
-  let rows = []
-
-  if (values.role == 'MainAdmin') {
-    rows = [
-      {
-        SalonName: 'Hassan',
-        ownerName: 'Hassan',
-        address: 'taleh',
-        phone: '0617675645',
-        status: 'InActive',
-        remaining: 4
-      }
-    ]
-  } else {
-    rows = [
-      {
-        name: 'Hassan',
-        phone: '0617675645',
-        title: 'Cilan',
-        subTitle: 'Cilan marin',
-        price: 30,
-        que: 3,
-        arrivalTime: 'tomorow',
-        date: '09/23/2016',
-        status: 'InActive'
-      }
-    ]
-  }
-
   useEffect(() => {
     fetchOverviewTable()
     console.log('rd:-', rowsData)
