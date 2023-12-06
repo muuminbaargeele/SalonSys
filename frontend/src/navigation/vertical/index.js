@@ -4,6 +4,8 @@ import HomeOutline from 'mdi-material-ui/HomeOutline'
 import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
 import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
+import Import from 'mdi-material-ui/Import'
+import PlaylistPlus from 'mdi-material-ui/PlaylistPlus'
 
 const navigation = () => {
   const { values } = FetchLoggedUserInfo()
@@ -55,15 +57,23 @@ const navigation = () => {
         path: '/register'
       },
       {
-        title: 'Requests',
-        icon: AccountPlusOutline,
-        path: '/requests'
-      },
-      {
         title: 'Manage',
         icon: AccountGroupOutline,
         path: '/manage'
-      }
+      },
+      {
+        sectionTitle: 'Services'
+      },
+      {
+        title: 'Requests',
+        icon: Import,
+        path: '/requests'
+      },
+      {
+        title: 'Add Service',
+        icon: PlaylistPlus,
+        path: '/add-service'
+      },
     ]
   } else {
     return [
@@ -78,18 +88,18 @@ const navigation = () => {
         path: '/account-settings'
       },
       {
-        sectionTitle: 'Pages'
+        sectionTitle: 'Services'
       },
       {
         title: 'Requests',
-        icon: AccountPlusOutline,
+        icon: Import,
         path: '/requests'
       },
       {
-        title: 'Manage',
-        icon: AccountGroupOutline,
-        path: '/manage'
-      }
+        title: 'Add Service',
+        icon: PlaylistPlus,
+        path: '/add-service'
+      },
     ]
   }
 }
