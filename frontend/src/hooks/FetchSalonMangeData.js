@@ -61,7 +61,7 @@ const FetchSalonMangeData = () => {
     fetchSalonManageData()
   }, [])
 
-  return { salonManageData, mainManageDT, setMainManageDT, fetchSalonManageData }
+  return { salonManageData, setSalonManageData, mainManageDT, setMainManageDT, fetchSalonManageData }
 }
 
 export default FetchSalonMangeData

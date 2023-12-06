@@ -77,6 +77,7 @@ const ManageTable = props => {
   const { hidden, toggleNavVisibility } = props
 
   const [modalIsOpen, setIsOpen] = useState(false)
+  const [isSalonManageModalOpen, setIsSalonManageModalOpen] = useState(false)
   const [selectedSalon, setSelectSalon] = useState({
     SalonName: '',
     Address: '',
@@ -92,7 +93,17 @@ const ManageTable = props => {
     SalonLink: '',
     CustomerLink: ''
   })
+  const [selectedSalonEmployer, setSelectSalonEmployer] = useState({
+    EmployerName: '',
+    EmployerPhone: '',
+    EmployerCreateDT: '',
+    EmployerUserName: '',
+    EmployerRole: '',
+    EmployerShift: '',
+    EmployerID: ''
+  })
   const [inputValue, setInputValue] = useState('')
+  const [salonEmployerInputValue, setSalonEmployerInputValue] = useState('')
 
   const openModal = id => {
     setIsOpen(true)
@@ -120,6 +131,27 @@ const ManageTable = props => {
     setIsOpen(false)
   }
 
+  const openSalonManageModal = id => {
+    setIsSalonManageModalOpen(true)
+
+    const findSelectedEmployer = salonManageData.find(employer => employer.AdID == id)
+    console.log(findSelectedEmployer)
+
+    setSelectSalonEmployer({
+      EmployerName: findSelectedEmployer.Name,
+      EmployerPhone: findSelectedEmployer.Phone,
+      EmployerCreateDT: findSelectedEmployer.CreateDT,
+      EmployerUserName: findSelectedEmployer.Username,
+      EmployerRole: findSelectedEmployer.Role,
+      EmployerShift: findSelectedEmployer.Shift,
+      EmployerID: findSelectedEmployer.AdID
+    })
+  }
+
+  const closeSalonManageModal = () => {
+    setIsSalonManageModalOpen(false)
+  }
+
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -129,7 +161,8 @@ const ManageTable = props => {
 
   const { fetchOverviewTable } = FetchOverviewTableData()
   const { values } = FetchLoggedUserInfo()
-  const { salonManageData, mainManageDT, setMainManageDT, fetchSalonManageData } = FetchSalonMangeData()
+  const { salonManageData, setSalonManageData, mainManageDT, setMainManageDT, fetchSalonManageData } =
+    FetchSalonMangeData()
 
   if (values.role == 'MainAdmin') {
     // Main admin
@@ -218,6 +251,13 @@ const ManageTable = props => {
     }))
   }
 
+  const handleSalonEmployerModalChange = prop => event => {
+    setSelectSalonEmployer(prevState => ({
+      ...prevState,
+      [prop]: event.target.value
+    }))
+  }
+
   const updateSalonInfo = async event => {
     event.preventDefault()
 
@@ -276,8 +316,59 @@ const ManageTable = props => {
     }
   }
 
+  const updateSalonEmployerInfo = async event => {
+    event.preventDefault()
+
+    if (
+      !selectedSalonEmployer.EmployerName ||
+      !selectedSalonEmployer.EmployerPhone ||
+      !selectedSalonEmployer.EmployerShift
+    )
+      return toast.error('Fill all inputfields.')
+
+    const requestData = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+
+    const currUsername = window.localStorage.getItem('username')
+
+    const params = new URLSearchParams()
+    params.append('AdID', selectedSalonEmployer.EmployerID)
+    params.append('Username', currUsername)
+    params.append('Name', selectedSalonEmployer.EmployerName)
+    params.append('Phone', selectedSalonEmployer.EmployerPhone)
+    params.append('Shift', selectedSalonEmployer.EmployerShift)
+
+    console.log('emlo', selectedSalonEmployer.EmployerName)
+
+    try {
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/update_manage.php',
+        params,
+        requestData
+      )
+      const data = await response.data
+      if (data) {
+        fetchSalonManageData()
+        closeSalonManageModal()
+        data == 'Success' ? toast.success(data) : toast.error(data)
+        setSelectSalonEmployer({
+          EmployerName: '',
+          EmployerPhone: '',
+          EmployerCreateDT: '',
+          EmployerUserName: '',
+          EmployerRole: '',
+          EmployerShift: ''
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const deleteSalon = async id => {
-    const confirmToDelete = confirm('Are sure to delete, this will every where even database?')
+    const confirmToDelete = confirm('Are sure to delete, this will be deleted every where even database?')
     if (!confirmToDelete) return
 
     const currUsername = window.localStorage.getItem('username')
@@ -308,6 +399,39 @@ const ManageTable = props => {
     }
   }
 
+  const deleteSalonEmployer = async id => {
+    const confirmToDelete = confirm('Are sure to delete, this will be deleted every where even database?')
+    if (!confirmToDelete) return
+
+    const currUsername = window.localStorage.getItem('username')
+
+    const requestData = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+
+    const params = new URLSearchParams()
+    params.append('Username', currUsername)
+    params.append('SalonUser', id)
+
+    try {
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/delete_salonadmin.php',
+        params,
+        requestData
+      )
+      const data = await response.data
+      console.log(data)
+      if (data == 'Success') {
+        toast.success(data)
+        closeSalonManageModal()
+        fetchSalonManageData()
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleSearch = event => {
     const searchValue = event.target.value
     setInputValue(searchValue)
@@ -326,6 +450,27 @@ const ManageTable = props => {
         toast.error('Not found')
       }
       setMainManageDT(filteredResults)
+    }
+  }
+
+  const handleEmployerSearch = event => {
+    const searchValue = event.target.value
+    setSalonEmployerInputValue(searchValue)
+
+    const filteredResults = salonManageData.filter(el =>
+      Object.values(el).some(
+        value => value && typeof value === 'string' && value.toLowerCase().includes(searchValue.toLowerCase())
+      )
+    )
+
+    if (salonEmployerInputValue === '' || salonEmployerInputValue.length == 1) {
+      fetchSalonManageData()
+    } else {
+      if (filteredResults.length <= 0) {
+        fetchSalonManageData()
+        toast.error('Not found')
+      }
+      setSalonManageData(filteredResults)
     }
   }
 
@@ -355,8 +500,8 @@ const ManageTable = props => {
               </IconButton>
             ) : null}
             <TextField
-              onChange={handleSearch}
-              value={inputValue}
+              onChange={values.role == 'MainAdmin' ? handleSearch : handleEmployerSearch}
+              value={values.role == 'MainAdmin' ? inputValue : salonEmployerInputValue}
               size='small'
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
               InputProps={{
@@ -387,7 +532,7 @@ const ManageTable = props => {
               ? // Main admin
                 mainManageDT.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                    <TableRow hover role='checkbox' tabIndex={-1} key={`${index}-${row.id}`}>
                       {columns.map((column, index) => {
                         const value = row[column.id]
 
@@ -445,9 +590,9 @@ const ManageTable = props => {
                 })
               : values.role == 'SalonAdmin'
               ? // Salon admin
-                salonManageData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                salonManageData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                    <TableRow hover role='checkbox' tabIndex={-1} key={`${index}-${row.id}`}>
                       {columns.map((column, index) => {
                         if (column.id === 'state') {
                           return (
@@ -474,7 +619,11 @@ const ManageTable = props => {
                                 {row.Shift}
                               </TableCell>
                               <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                actions
+                                <AccountEdit
+                                  sx={{ cursor: 'pointer' }}
+                                  size={3}
+                                  onClick={() => openSalonManageModal(row.AdID)}
+                                />
                               </TableCell>
                             </React.Fragment>
                           )
@@ -498,8 +647,9 @@ const ManageTable = props => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
 
+      {/* Main manage modal */}
       <ThemeProvider theme={theme}>
-        <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} contentLabel='Example Modal'>
+        <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} contentLabel='Main Modal'>
           <CardContent>
             <form onSubmit={updateSalonInfo}>
               <Grid container spacing={3} sx={{ width: 900 }}>
@@ -622,6 +772,105 @@ const ManageTable = props => {
           </CardContent>
         </Modal>
       </ThemeProvider>
+      {/* Main manage modal */}
+
+      {/* Salon manage modal */}
+      <ThemeProvider theme={theme}>
+        <Modal
+          isOpen={isSalonManageModalOpen}
+          onRequestClose={closeSalonManageModal}
+          style={customStyles}
+          contentLabel='Salon Modal'
+        >
+          <CardContent>
+            <form onSubmit={updateSalonEmployerInfo}>
+              <Grid container spacing={4} sx={{ width: 900 }}>
+                <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography sx={{ color: 'black' }}>Upadte Salon User</Typography>
+                    <Button onClick={closeSalonManageModal}>Close</Button>
+                  </Box>
+                  <Divider></Divider>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Name'
+                    value={selectedSalonEmployer.EmployerName}
+                    onChange={handleSalonEmployerModalChange('EmployerName')}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Phone No'
+                    value={selectedSalonEmployer.EmployerPhone}
+                    onChange={handleSalonEmployerModalChange('EmployerPhone')}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    style={{ pointerEvents: 'none' }}
+                    fullWidth
+                    label='Create Date'
+                    value={selectedSalonEmployer.EmployerCreateDT}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label='Username'
+                    style={{ pointerEvents: 'none' }}
+                    value={selectedSalonEmployer.EmployerUserName}
+                    onChange={handleSalonEmployerModalChange('EmployerUserName')}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    style={{ pointerEvents: 'none' }}
+                    fullWidth
+                    label='Role'
+                    value={selectedSalonEmployer.EmployerRole}
+                    onChange={handleSalonEmployerModalChange('EmployerRole')}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <FormControl fullWidth>
+                    <InputLabel id='form-layouts-separator-select-label'>Shift</InputLabel>
+                    <Select
+                      label='Shift'
+                      value={selectedSalonEmployer.EmployerShift}
+                      onChange={handleSalonEmployerModalChange('EmployerShift')}
+                      style={{ zIndex: 9999999999 }}
+                      MenuProps={{ style: { zIndex: 9999999999 } }}
+                    >
+                      <MenuItem value='Day Shift'>Day Shift</MenuItem>
+                      <MenuItem value='Night Shift'>Night Shift</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Button type='submit' variant='contained' sx={{ marginRight: 3.5 }}>
+                    Save Changes
+                  </Button>
+                  <Button
+                    type='button'
+                    variant='outlined'
+                    color='error'
+                    onClick={() => {
+                      deleteSalonEmployer(selectedSalonEmployer.EmployerID)
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </CardContent>
+        </Modal>
+      </ThemeProvider>
+      {/* Salon manage modal */}
     </Paper>
   )
 }
