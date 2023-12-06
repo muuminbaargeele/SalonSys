@@ -28,8 +28,20 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import axios from 'axios'
 
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
+import { useEffect } from 'react'
 
 const FormLayoutsSeparator = () => {
+
+  const [currentUrl, SetCurrentUrl] = useState('')
+  const [loginUrl, SetLoginUrl] = useState('')
+
+  useEffect(() => {
+    // const currentUrl = window.location.origin + "/";
+    SetCurrentUrl(window.location.origin + "/landing-page")
+    SetLoginUrl(window.location.origin + "/login")
+  }, [])
+  console.log(currentUrl)
+
   const [values, setValues] = useState({
     ownerName: '',
     phone: '',
@@ -100,6 +112,8 @@ const FormLayoutsSeparator = () => {
       params.append('Amount', values.amount)
       params.append('SalonName', values.salonName)
       params.append('Address', values.address)
+      params.append('Link', currentUrl)
+      params.append('LoginLink', loginUrl)
     } else {
       params.append('Shift', values.shift)
     }
@@ -138,7 +152,7 @@ const FormLayoutsSeparator = () => {
 
   return (
     <Card>
-      <CardHeader title='Register New User' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader title="Register New User" titleTypographyProps={{ variant: 'h6' }} />
       <Divider sx={{ margin: 0 }} />
       <form onSubmit={handleRegister}>
         <CardContent>

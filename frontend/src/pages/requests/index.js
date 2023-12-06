@@ -19,6 +19,7 @@ import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import FetchOverviewTableData from 'src/hooks/FetchOverviewTableData'
+import axios from 'axios'
 
 const DashboardTable = props => {
   const { hidden, hiddenSm } = props
@@ -31,12 +32,45 @@ const DashboardTable = props => {
 
   const { fetchOverviewTable, rowsData, setRowsData } = FetchOverviewTableData()
 
+  const updateRequest = async (reqid, status) => {
+    const currUsername = window.localStorage.getItem('username')
+
+    const params = new URLSearchParams()
+    params.append('Username', currUsername)
+    params.append('ReqId', reqid)
+    params.append('Status', status)
+
+    const requestData = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+
+    try {
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/update_requests.php',
+        params,
+        requestData
+      )
+      const data = await response.data
+      if (data == 'Success') {
+        toast.success(data)
+        fetchOverviewTable()
+      } else {
+        toast.error(data)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleActionChange = (event, id) => {
     const selectedValue = event.target.value;
 
     // Log the selected value for the clicked row
     console.log(`Row ID: ${id}, Selected Value: ${selectedValue}`);
-    
+    updateRequest(id, selectedValue)
+
+
 
     // Update the state for the specific row
     setActionValues((prevValues) => ({
@@ -47,7 +81,6 @@ const DashboardTable = props => {
 
   useEffect(() => {
     fetchOverviewTable()
-    console.log('rd:-', rowsData)
   }, [])
 
   const handleSearch = event => {
@@ -165,7 +198,7 @@ const DashboardTable = props => {
                       <Select
                         id='form-layouts-separator-select'
                         labelId='form-layouts-separator-select-label'
-                        value={actionValues[row.ReqId] || ''}  // Use actionValues[row.ReqId]
+                        value={actionValues[row.ReqId] || row.Status}  // Use actionValues[row.ReqId]
                         onChange={(event) => handleActionChange(event, row.ReqId)}
                       >
                         <MenuItem value='0'>Not Started</MenuItem>
