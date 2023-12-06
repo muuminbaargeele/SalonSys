@@ -29,7 +29,10 @@ import '../../styles/globals.css'
 
 // ** Contexts
 import { AuthContextProvider } from 'src/context/AuthContext'
-import { useEffect } from 'react'
+
+import Modal from 'react-modal'
+
+Modal.setAppElement('#__next')
 
 const clientSideEmotionCache = createEmotionCache()
 
