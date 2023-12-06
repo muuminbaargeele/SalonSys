@@ -6,6 +6,7 @@ import AccountPlusOutline from 'mdi-material-ui/AccountPlusOutline'
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import Import from 'mdi-material-ui/Import'
 import PlaylistPlus from 'mdi-material-ui/PlaylistPlus'
+import FormatListBulleted from 'mdi-material-ui/FormatListBulleted'
 
 const navigation = () => {
   const { values } = FetchLoggedUserInfo()
@@ -74,6 +75,11 @@ const navigation = () => {
         icon: PlaylistPlus,
         path: '/add-service'
       },
+      {
+        title: 'Manage Service',
+        icon: FormatListBulleted,
+        path: '/services'
+      },
     ]
   } else {
     return [
@@ -99,6 +105,11 @@ const navigation = () => {
         title: 'Add Service',
         icon: PlaylistPlus,
         path: '/add-service'
+      },
+      {
+        title: 'Manage Service',
+        icon: FormatListBulleted,
+        path: '/services'
       },
     ]
   }
