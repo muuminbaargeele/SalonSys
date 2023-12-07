@@ -15,10 +15,6 @@ import Divider from '@mui/material/Divider'
 
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
 import AccountEdit from 'mdi-material-ui/AccountEdit'
 import {
   Box,
@@ -37,9 +33,7 @@ import Typography from '@mui/material/Typography'
 
 import Modal from 'react-modal'
 
-import FetchOverviewTableData from 'src/hooks/FetchOverviewTableData'
-import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
-import FetchSalonMangeData from 'src/hooks/FetchSalonMangeData'
+import FetchServicesData from 'src/hooks/FetchServices'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 
@@ -71,168 +65,68 @@ const theme = createTheme({
   }
 })
 
-let columns = []
+let columns = [
+  { id: 'serviceId', label: '#', minWidth: 50 },
+  { id: 'Title', label: 'Title', minWidth: 100 },
+  {
+    id: 'SubTitle',
+    label: 'Sub Title',
+    minWidth: 100
+  },
+  {
+    id: 'CreateDT',
+    label: 'Create Date',
+    minWidth: 100
+  },
+
+  {
+    id: 'Price',
+    label: 'Price',
+    minWidth: 100
+  },
+  { id: 'actions3', label: 'actions', minWidth: 100 }
+]
 
 const ManageTable = props => {
   const { hidden, toggleNavVisibility } = props
 
-  const [modalIsOpen, setIsOpen] = useState(false)
-  const [isSalonManageModalOpen, setIsSalonManageModalOpen] = useState(false)
-  const [selectedSalon, setSelectSalon] = useState({
-    SalonName: '',
-    Address: '',
-    Name: '',
-    Phone: '',
-    CreateDT: '',
-    Amount: '',
-    Remaining: '',
-    ModalStatus: '',
-    LastActivation: '',
-    AdID: '',
-    SalonID: '',
-    SalonLink: '',
-    CustomerLink: ''
-  })
-  const [selectedSalonEmployer, setSelectSalonEmployer] = useState({
-    EmployerName: '',
-    EmployerPhone: '',
-    EmployerCreateDT: '',
-    EmployerUserName: '',
-    EmployerRole: '',
-    EmployerShift: '',
-    EmployerID: ''
-  })
-  const [inputValue, setInputValue] = useState('')
-  const [salonEmployerInputValue, setSalonEmployerInputValue] = useState('')
-
-  const openModal = id => {
-    setIsOpen(true)
-
-    const findSelectedSalon = mainManageDT.find(salonAdmin => salonAdmin.AdID == id)
-
-    setSelectSalon({
-      SalonName: findSelectedSalon.SalonName,
-      Address: findSelectedSalon.Address,
-      Name: findSelectedSalon.Name,
-      Phone: findSelectedSalon.Phone,
-      CreateDT: findSelectedSalon.CreateDT,
-      Amount: findSelectedSalon.Amount,
-      Remaining: findSelectedSalon.Remaining,
-      ModalStatus: findSelectedSalon.Status,
-      LastActivation: findSelectedSalon.LastActivation,
-      AdID: findSelectedSalon.AdID,
-      SalonID: findSelectedSalon.SalonID,
-      SalonLink: findSelectedSalon.SalonLink,
-      CustomerLink: findSelectedSalon.CustomerLink
-    })
-  }
-
-  const closeModal = () => {
-    setIsOpen(false)
-  }
-
-  const openSalonManageModal = id => {
-    setIsSalonManageModalOpen(true)
-
-    const findSelectedEmployer = salonManageData.find(employer => employer.AdID == id)
-    console.log(findSelectedEmployer)
-
-    setSelectSalonEmployer({
-      EmployerName: findSelectedEmployer.Name,
-      EmployerPhone: findSelectedEmployer.Phone,
-      EmployerCreateDT: findSelectedEmployer.CreateDT,
-      EmployerUserName: findSelectedEmployer.Username,
-      EmployerRole: findSelectedEmployer.Role,
-      EmployerShift: findSelectedEmployer.Shift,
-      EmployerID: findSelectedEmployer.AdID
-    })
-  }
-
-  const closeSalonManageModal = () => {
-    setIsSalonManageModalOpen(false)
-  }
-
   // ** States
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [isServiceModalOpen, setIsServiceModal] = useState(false)
+  const [selectedService, setSelectedService] = useState({
+    ServiceID: '',
+    ServiceTitle: '',
+    ServiceSubTitle: '',
+    ServiceCreateDT: '',
+    ServicePrice: ''
+  })
+  const [inputValue, setInputValue] = useState('')
 
   // ** Hook
   const hiddenSm = useMediaQuery(theme => theme.breakpoints.down('sm'))
+  const { fetchServicesData, services, setServices } = FetchServicesData()
+  console.log('server', services)
 
-  const { fetchOverviewTable } = FetchOverviewTableData()
-  const { values } = FetchLoggedUserInfo()
-  const { salonManageData, setSalonManageData, mainManageDT, setMainManageDT, fetchSalonManageData } =
-    FetchSalonMangeData()
+  const closeModal = () => {
+    setIsServiceModal(false)
+  }
 
-  if (values.role == 'MainAdmin') {
-    // Main admin
-    columns = [
-      { id: 'id', label: '#', minWidth: 50 },
-      { id: 'salonname', label: 'Salon Name', minWidth: 100 },
-      { id: 'address', label: 'Address', minWidth: 100 },
-      {
-        id: 'ownername',
-        label: 'owner name',
-        minWidth: 100
-      },
-      {
-        id: 'phone',
-        label: 'phone no.',
-        minWidth: 100
-      },
-      {
-        id: 'CreateDT',
-        label: 'Create Date',
-        minWidth: 100
-      },
-      {
-        id: 'Amount',
-        label: 'Amount',
-        minWidth: 100
-      },
-      {
-        id: 'remaining',
-        label: 'remaining',
-        minWidth: 100
-      },
-      {
-        id: 'state',
-        label: 'Status',
-        minWidth: 100
-      },
-      { id: 'actions', label: 'Actions', minWidth: 100 }
-    ]
-  } else if (values.role == 'SalonAdmin') {
-    // Salon admin
-    columns = [
-      { id: 'id', label: '#', minWidth: 50 },
-      { id: 'salonname', label: ' Name', minWidth: 100 },
-      {
-        id: 'phone',
-        label: 'phone no.',
-        minWidth: 100
-      },
-      {
-        id: 'CreateDT',
-        label: 'Create Date',
-        minWidth: 100
-      },
+  const openModal = id => {
+    setIsServiceModal(true)
 
-      {
-        id: 'state',
-        label: 'Username',
-        minWidth: 100
-      },
-      { id: 'actions', label: 'Role', minWidth: 100 },
-      { id: 'actions2', label: 'Shift', minWidth: 100 },
-      { id: 'actions3', label: 'actions', minWidth: 100 }
-    ]
-  } else {
-    columns = []
+    const findSelectedService = services.find(service => service.serviceId == id)
+    setSelectedService({
+      ServiceID: findSelectedService.serviceId,
+      ServiceTitle: findSelectedService.Title,
+      ServiceSubTitle: findSelectedService.SubTitle,
+      ServiceCreateDT: findSelectedService.CreateDT,
+      ServicePrice: findSelectedService.Price
+    })
   }
 
   useEffect(() => {
-    fetchOverviewTable()
+    fetchServicesData()
   }, [])
 
   const handleChangePage = (event, newPage) => {
@@ -244,32 +138,17 @@ const ManageTable = props => {
     setPage(0)
   }
 
-  const handleModalChange = prop => event => {
-    setSelectSalon(prevState => ({
+  const handleServiceModalChange = prop => event => {
+    setSelectedService(prevState => ({
       ...prevState,
       [prop]: event.target.value
     }))
   }
 
-  const handleSalonEmployerModalChange = prop => event => {
-    setSelectSalonEmployer(prevState => ({
-      ...prevState,
-      [prop]: event.target.value
-    }))
-  }
-
-  const updateSalonInfo = async event => {
+  const updateServiceInfo = async event => {
     event.preventDefault()
 
-    if (
-      !selectedSalon.SalonName ||
-      !selectedSalon.Address ||
-      !selectedSalon.Name ||
-      !selectedSalon.Phone ||
-      !selectedSalon.Amount ||
-      !selectedSalon.ModalStatus ||
-      !selectedSalon.LastActivation
-    )
+    if (!selectedService.ServiceTitle || !selectedService.ServiceSubTitle || !selectedService.ServicePrice)
       return toast.error('Fill all inputfields.')
 
     const requestData = {
@@ -280,35 +159,29 @@ const ManageTable = props => {
     const currUsername = window.localStorage.getItem('username')
 
     const params = new URLSearchParams()
-    params.append('AdID', selectedSalon.AdID)
-    params.append('SalonID', selectedSalon.SalonID)
-    params.append('SalonName', selectedSalon.SalonName)
-    params.append('Address', selectedSalon.Address)
-    params.append('Name', selectedSalon.Name)
-    params.append('Phone', selectedSalon.Phone)
-    params.append('Amount', selectedSalon.Amount)
-    params.append('Status', selectedSalon.ModalStatus)
-    params.append('LastActivation', selectedSalon.LastActivation)
     params.append('Username', currUsername)
+    params.append('ServiceId', selectedService.ServiceID)
+    params.append('Title', selectedService.ServiceTitle)
+    params.append('SubTitle', selectedService.ServiceSubTitle)
+    params.append('Price', selectedService.ServicePrice)
 
     try {
       const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_manage.php',
+        'https://salonsys.000webhostapp.com/backend/api/update_services.php',
         params,
         requestData
       )
       const data = await response.data
       if (data) {
-        fetchSalonManageData()
+        fetchServicesData()
         closeModal()
         data == 'Success' ? toast.success(data) : toast.error(data)
-        setSelectSalon({
-          SalonName: '',
-          Address: '',
-          Name: '',
-          Phone: '',
-          Amount: '',
-          Status: ''
+        setSelectedService({
+          ServiceTitle: '',
+          ServiceSubTitle: '',
+          ServicePrice: '',
+          ServiceCreateDT: '',
+          ServiceID: ''
         })
       }
     } catch (error) {
@@ -316,58 +189,8 @@ const ManageTable = props => {
     }
   }
 
-  const updateSalonEmployerInfo = async event => {
-    event.preventDefault()
-
-    if (
-      !selectedSalonEmployer.EmployerName ||
-      !selectedSalonEmployer.EmployerPhone ||
-      !selectedSalonEmployer.EmployerShift
-    )
-      return toast.error('Fill all inputfields.')
-
-    const requestData = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }
-
-    const currUsername = window.localStorage.getItem('username')
-
-    const params = new URLSearchParams()
-    params.append('AdID', selectedSalonEmployer.EmployerID)
-    params.append('Username', currUsername)
-    params.append('Name', selectedSalonEmployer.EmployerName)
-    params.append('Phone', selectedSalonEmployer.EmployerPhone)
-    params.append('Shift', selectedSalonEmployer.EmployerShift)
-
-    console.log('emlo', selectedSalonEmployer.EmployerName)
-
-    try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_manage.php',
-        params,
-        requestData
-      )
-      const data = await response.data
-      if (data) {
-        fetchSalonManageData()
-        closeSalonManageModal()
-        data == 'Success' ? toast.success(data) : toast.error(data)
-        setSelectSalonEmployer({
-          EmployerName: '',
-          EmployerPhone: '',
-          EmployerCreateDT: '',
-          EmployerUserName: '',
-          EmployerRole: '',
-          EmployerShift: ''
-        })
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const deleteSalon = async id => {
+  const deleteService = async id => {
+    console.log('id', id)
     const confirmToDelete = confirm('Are sure to delete, this will be deleted every where even database?')
     if (!confirmToDelete) return
 
@@ -380,11 +203,11 @@ const ManageTable = props => {
 
     const params = new URLSearchParams()
     params.append('Username', currUsername)
-    params.append('SalonID', id)
+    params.append('ServiceId', id)
 
     try {
       const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/delete_salonadmin.php',
+        'https://salonsys.000webhostapp.com/backend/api/delete_service.php',
         params,
         requestData
       )
@@ -392,40 +215,7 @@ const ManageTable = props => {
       if (data == 'Success') {
         toast.success(data)
         closeModal()
-        fetchSalonManageData()
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const deleteSalonEmployer = async id => {
-    const confirmToDelete = confirm('Are sure to delete, this will be deleted every where even database?')
-    if (!confirmToDelete) return
-
-    const currUsername = window.localStorage.getItem('username')
-
-    const requestData = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }
-
-    const params = new URLSearchParams()
-    params.append('Username', currUsername)
-    params.append('SalonUser', id)
-
-    try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/delete_salonadmin.php',
-        params,
-        requestData
-      )
-      const data = await response.data
-      console.log(data)
-      if (data == 'Success') {
-        toast.success(data)
-        closeSalonManageModal()
-        fetchSalonManageData()
+        fetchServicesData()
       }
     } catch (error) {
       console.log(error)
@@ -436,51 +226,20 @@ const ManageTable = props => {
     const searchValue = event.target.value
     setInputValue(searchValue)
 
-    const filteredResults = mainManageDT.filter(el =>
+    const filteredResults = services.filter(el =>
       Object.values(el).some(
         value => value && typeof value === 'string' && value.toLowerCase().includes(searchValue.toLowerCase())
       )
     )
 
     if (inputValue === '' || inputValue.length == 1) {
-      fetchSalonManageData()
+      fetchServicesData()
     } else {
       if (filteredResults.length <= 0) {
-        fetchSalonManageData()
+        fetchServicesData()
         toast.error('Not found')
       }
-      setMainManageDT(filteredResults)
-    }
-  }
-
-  const handleEmployerSearch = event => {
-    const searchValue = event.target.value
-    setSalonEmployerInputValue(searchValue)
-
-    const filteredResults = salonManageData.filter(el =>
-      Object.values(el).some(
-        value => value && typeof value === 'string' && value.toLowerCase().includes(searchValue.toLowerCase())
-      )
-    )
-
-    if (salonEmployerInputValue === '' || salonEmployerInputValue.length == 1) {
-      fetchSalonManageData()
-    } else {
-      if (filteredResults.length <= 0) {
-        fetchSalonManageData()
-        toast.error('Not found')
-      }
-      setSalonManageData(filteredResults)
-    }
-  }
-
-  const copyToClipboard = inputId => {
-    const inputElement = document.getElementById(inputId)
-
-    if (inputElement) {
-      inputElement.select()
-      document.execCommand('copy')
-      toast.success(`${inputId} copied to clipboard!`)
+      setServices(filteredResults)
     }
   }
 
@@ -488,7 +247,7 @@ const ManageTable = props => {
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <CardActions>
         <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <CardHeader title='Manage' titleTypographyProps={{ variant: 'h6' }} />
+          <CardHeader title='Manage Services' titleTypographyProps={{ variant: 'h6' }} />
           <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
             {hidden ? (
               <IconButton
@@ -500,8 +259,8 @@ const ManageTable = props => {
               </IconButton>
             ) : null}
             <TextField
-              onChange={values.role == 'MainAdmin' ? handleSearch : handleEmployerSearch}
-              value={values.role == 'MainAdmin' ? inputValue : salonEmployerInputValue}
+              onChange={handleSearch}
+              value={inputValue}
               size='small'
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
               InputProps={{
@@ -520,119 +279,36 @@ const ManageTable = props => {
         <Table stickyHeader aria-label='sticky table'>
           <TableHead>
             <TableRow>
-              {columns.map((column, index) => (
-                <TableCell key={`${column.id} + ${index}`} align={column.align} sx={{ minWidth: column.minWidth }}>
+              {columns.map(column => (
+                <TableCell key={column.id} align='left' sx={{ minWidth: column.minWidth }}>
                   {column.label}
                 </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {values.role == 'MainAdmin'
-              ? // Main admin
-                mainManageDT.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                  return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={`${index}-${row.id}`}>
-                      {columns.map((column, index) => {
-                        const value = row[column.id]
+            {services.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+              return (
+                <TableRow hover role='checkbox' tabIndex={-1} key={row.id}>
+                  {columns.map(column => {
+                    const value = row[column.id]
 
-                        if (column.id === 'state') {
-                          const textColor = row.Status === '1' ? 'green' : 'red'
-
-                          return (
-                            <React.Fragment key={`${index}-${column.id}`}>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.AdID}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.SalonName}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Address}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Name}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Phone}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.CreateDT}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {`$${row.Amount}`}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <span style={{ color: row.Remaining >= 0 ? null : 'red', fontWeight: 600 }}>
-                                  {row.Remaining >= 0 ? row.Remaining : 'Expaired'}
-                                </span>
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <span style={{ color: textColor, fontWeight: 600 }}>
-                                  <span>{row.Status === '1' ? 'Active' : 'Inactive'}</span>
-                                </span>
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <AccountEdit
-                                  sx={{ cursor: 'pointer' }}
-                                  size={3}
-                                  onClick={() => {
-                                    openModal(row.AdID)
-                                  }}
-                                />
-                              </TableCell>
-                            </React.Fragment>
-                          )
-                        }
-                      })}
-                    </TableRow>
-                  )
-                })
-              : values.role == 'SalonAdmin'
-              ? // Salon admin
-                salonManageData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                  return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={`${index}-${row.id}`}>
-                      {columns.map((column, index) => {
-                        if (column.id === 'state') {
-                          return (
-                            <React.Fragment key={`${index}-${column.id}`}>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.AdID}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Name}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Phone}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.CreateDT}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Username}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Role}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Shift}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <AccountEdit
-                                  sx={{ cursor: 'pointer' }}
-                                  size={3}
-                                  onClick={() => openSalonManageModal(row.AdID)}
-                                />
-                              </TableCell>
-                            </React.Fragment>
-                          )
-                        }
-                      })}
-                    </TableRow>
-                  )
-                })
-              : null}
+                    return (
+                      <TableCell key={column.id} align='left'>
+                        {column.id === 'actions3' ? (
+                          <>
+                            {value}
+                            <AccountEdit sx={{ cursor: 'pointer' }} size={3} onClick={() => openModal(row.serviceId)} />
+                          </>
+                        ) : (
+                          value
+                        )}
+                      </TableCell>
+                    )
+                  })}
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </TableContainer>
@@ -640,22 +316,27 @@ const ManageTable = props => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component='div'
-        count={values.role == 'MainAdmin' ? mainManageDT.length : salonManageData.length}
+        count={services.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
 
-      {/* Main manage modal */}
+      {/* Service manage modal */}
       <ThemeProvider theme={theme}>
-        <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} contentLabel='Main Modal'>
+        <Modal
+          isOpen={isServiceModalOpen}
+          onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel='servive Modal'
+        >
           <CardContent>
-            <form onSubmit={updateSalonInfo}>
-              <Grid container spacing={3} sx={{ width: 900 }}>
+            <form onSubmit={updateServiceInfo}>
+              <Grid container spacing={4} sx={{ width: 900 }}>
                 <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'black' }}>Upadte Salon</Typography>
+                    <Typography sx={{ color: 'black' }}>Upadte Service</Typography>
                     <Button onClick={closeModal}>Close</Button>
                   </Box>
                   <Divider></Divider>
@@ -663,149 +344,17 @@ const ManageTable = props => {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label='SalonName'
-                    value={selectedSalon.SalonName}
-                    onChange={handleModalChange('SalonName')}
+                    label='Title'
+                    value={selectedService.ServiceTitle}
+                    onChange={handleServiceModalChange('ServiceTitle')}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label='Address'
-                    value={selectedSalon.Address}
-                    onChange={handleModalChange('Address')}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='OwnerName'
-                    value={selectedSalon.Name}
-                    onChange={handleModalChange('Name')}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Phone No'
-                    value={selectedSalon.Phone}
-                    onChange={handleModalChange('Phone')}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    id='SalonLinkInput'
-                    style={{ pointerEvents: 'none' }}
-                    fullWidth
-                    label='Salon Link'
-                    value={selectedSalon.SalonLink}
-                  />
-                  <Button onClick={() => copyToClipboard('SalonLinkInput')}>Copy Salon Link</Button>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    id='CustomerLinkInput'
-                    style={{ pointerEvents: 'none' }}
-                    fullWidth
-                    label='Customer Link'
-                    value={selectedSalon.CustomerLink}
-                  />
-                  <Button onClick={() => copyToClipboard('CustomerLinkInput')}>Copy Customer Link</Button>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    style={{ pointerEvents: 'none' }}
-                    fullWidth
-                    label='CreateDate'
-                    value={selectedSalon.CreateDT}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Amount'
-                    value={selectedSalon.Amount}
-                    onChange={handleModalChange('Amount')}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    style={{ pointerEvents: 'none' }}
-                    fullWidth
-                    label='Remaining'
-                    value={selectedSalon.Remaining < 0 ? 'Expaired' : selectedSalon.Remaining}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id='form-layouts-separator-select-label'>Status</InputLabel>
-                    <Select
-                      label='Status'
-                      value={selectedSalon.ModalStatus}
-                      onChange={handleModalChange('ModalStatus')}
-                      style={{ zIndex: 9999999999 }}
-                      MenuProps={{ style: { zIndex: 9999999999 } }}
-                    >
-                      <MenuItem value='0'>Inactive</MenuItem>
-                      <MenuItem value='1'>Active</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Button type='submit' variant='contained' sx={{ marginRight: 3.5 }}>
-                    Save Changes
-                  </Button>
-                  <Button
-                    type='button'
-                    variant='outlined'
-                    color='error'
-                    onClick={() => {
-                      deleteSalon(selectedSalon.SalonID)
-                    }}
-                  >
-                    Delete
-                  </Button>
-                </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-        </Modal>
-      </ThemeProvider>
-      {/* Main manage modal */}
-
-      {/* Salon manage modal */}
-      <ThemeProvider theme={theme}>
-        <Modal
-          isOpen={isSalonManageModalOpen}
-          onRequestClose={closeSalonManageModal}
-          style={customStyles}
-          contentLabel='Salon Modal'
-        >
-          <CardContent>
-            <form onSubmit={updateSalonEmployerInfo}>
-              <Grid container spacing={4} sx={{ width: 900 }}>
-                <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Typography sx={{ color: 'black' }}>Upadte Salon User</Typography>
-                    <Button onClick={closeSalonManageModal}>Close</Button>
-                  </Box>
-                  <Divider></Divider>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Name'
-                    value={selectedSalonEmployer.EmployerName}
-                    onChange={handleSalonEmployerModalChange('EmployerName')}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label='Phone No'
-                    value={selectedSalonEmployer.EmployerPhone}
-                    onChange={handleSalonEmployerModalChange('EmployerPhone')}
+                    label='SubTitle'
+                    value={selectedService.ServiceSubTitle}
+                    onChange={handleServiceModalChange('ServiceSubTitle')}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -813,41 +362,16 @@ const ManageTable = props => {
                     style={{ pointerEvents: 'none' }}
                     fullWidth
                     label='Create Date'
-                    value={selectedSalonEmployer.EmployerCreateDT}
+                    value={selectedService.ServiceCreateDT}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label='Username'
-                    style={{ pointerEvents: 'none' }}
-                    value={selectedSalonEmployer.EmployerUserName}
-                    onChange={handleSalonEmployerModalChange('EmployerUserName')}
+                    label='Price'
+                    value={selectedService.ServicePrice}
+                    onChange={handleServiceModalChange('ServicePrice')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    style={{ pointerEvents: 'none' }}
-                    fullWidth
-                    label='Role'
-                    value={selectedSalonEmployer.EmployerRole}
-                    onChange={handleSalonEmployerModalChange('EmployerRole')}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel id='form-layouts-separator-select-label'>Shift</InputLabel>
-                    <Select
-                      label='Shift'
-                      value={selectedSalonEmployer.EmployerShift}
-                      onChange={handleSalonEmployerModalChange('EmployerShift')}
-                      style={{ zIndex: 9999999999 }}
-                      MenuProps={{ style: { zIndex: 9999999999 } }}
-                    >
-                      <MenuItem value='Day Shift'>Day Shift</MenuItem>
-                      <MenuItem value='Night Shift'>Night Shift</MenuItem>
-                    </Select>
-                  </FormControl>
                 </Grid>
 
                 <Grid item xs={12}>
@@ -859,7 +383,7 @@ const ManageTable = props => {
                     variant='outlined'
                     color='error'
                     onClick={() => {
-                      deleteSalonEmployer(selectedSalonEmployer.EmployerID)
+                      deleteService(selectedService.ServiceID)
                     }}
                   >
                     Delete
@@ -870,7 +394,7 @@ const ManageTable = props => {
           </CardContent>
         </Modal>
       </ThemeProvider>
-      {/* Salon manage modal */}
+      {/* Service manage modal */}
     </Paper>
   )
 }

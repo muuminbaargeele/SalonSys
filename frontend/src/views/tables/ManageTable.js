@@ -43,6 +43,10 @@ import FetchSalonMangeData from 'src/hooks/FetchSalonMangeData'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 
+import MainAdminManage from 'src/@core/components/manage/MainAdminManage'
+import SalonAdminManage from 'src/@core/components/manage/SalonAdminManage'
+import MainManageModal from 'src/@core/components/modals/MainManageModal'
+
 const customStyles = {
   content: {
     top: '50%',
@@ -279,6 +283,15 @@ const ManageTable = props => {
 
     const currUsername = window.localStorage.getItem('username')
 
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth() + 1
+    const currentDay = currentDate.getDate()
+    const currentHour = currentDate.getHours()
+    const currentMinute = currentDate.getMinutes()
+    const currentSecond = currentDate.getSeconds()
+    const TodayDT = `${currentYear}-${currentMonth}-${currentDay} ${currentHour}:${currentMinute}:${currentSecond}`
+
     const params = new URLSearchParams()
     params.append('AdID', selectedSalon.AdID)
     params.append('SalonID', selectedSalon.SalonID)
@@ -289,6 +302,7 @@ const ManageTable = props => {
     params.append('Amount', selectedSalon.Amount)
     params.append('Status', selectedSalon.ModalStatus)
     params.append('LastActivation', selectedSalon.LastActivation)
+    params.append('TodayDT', TodayDT)
     params.append('Username', currUsername)
 
     try {
@@ -532,104 +546,26 @@ const ManageTable = props => {
               ? // Main admin
                 mainManageDT.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={`${index}-${row.id}`}>
-                      {columns.map((column, index) => {
-                        const value = row[column.id]
-
-                        if (column.id === 'state') {
-                          const textColor = row.Status === '1' ? 'green' : 'red'
-
-                          return (
-                            <React.Fragment key={`${index}-${column.id}`}>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.AdID}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.SalonName}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Address}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Name}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Phone}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.CreateDT}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {`$${row.Amount}`}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <span style={{ color: row.Remaining >= 0 ? null : 'red', fontWeight: 600 }}>
-                                  {row.Remaining >= 0 ? row.Remaining : 'Expaired'}
-                                </span>
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <span style={{ color: textColor, fontWeight: 600 }}>
-                                  <span>{row.Status === '1' ? 'Active' : 'Inactive'}</span>
-                                </span>
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <AccountEdit
-                                  sx={{ cursor: 'pointer' }}
-                                  size={3}
-                                  onClick={() => {
-                                    openModal(row.AdID)
-                                  }}
-                                />
-                              </TableCell>
-                            </React.Fragment>
-                          )
-                        }
-                      })}
-                    </TableRow>
+                    <MainAdminManage
+                      row={row}
+                      columns={columns}
+                      index={index}
+                      openModal={openModal}
+                      closeModal={closeModal}
+                    />
                   )
                 })
               : values.role == 'SalonAdmin'
               ? // Salon admin
                 salonManageData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
-                    <TableRow hover role='checkbox' tabIndex={-1} key={`${index}-${row.id}`}>
-                      {columns.map((column, index) => {
-                        if (column.id === 'state') {
-                          return (
-                            <React.Fragment key={`${index}-${column.id}`}>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.AdID}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Name}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Phone}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.CreateDT}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Username}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Role}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                {row.Shift}
-                              </TableCell>
-                              <TableCell key={`${index}-${column.id}`} align={column.align}>
-                                <AccountEdit
-                                  sx={{ cursor: 'pointer' }}
-                                  size={3}
-                                  onClick={() => openSalonManageModal(row.AdID)}
-                                />
-                              </TableCell>
-                            </React.Fragment>
-                          )
-                        }
-                      })}
-                    </TableRow>
+                    <SalonAdminManage
+                      row={row}
+                      columns={columns}
+                      index={index}
+                      openSalonManageModal={openSalonManageModal}
+                      closeSalonManageModal={closeSalonManageModal}
+                    />
                   )
                 })
               : null}
