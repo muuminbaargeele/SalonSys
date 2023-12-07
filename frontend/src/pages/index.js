@@ -34,6 +34,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (!isLogin) {
       router.push('/login')
+      return
     } else {
       console.log(username)
     }

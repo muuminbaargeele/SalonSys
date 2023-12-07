@@ -2,15 +2,6 @@
 import React, { useEffect, useState } from 'react'
 
 // ** MUI Imports
-import Paper from '@mui/material/Paper'
-import Table from '@mui/material/Table'
-import TableRow from '@mui/material/TableRow'
-import TableHead from '@mui/material/TableHead'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TablePagination from '@mui/material/TablePagination'
-import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
 
 import CardContent from '@mui/material/CardContent'
@@ -19,29 +10,12 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
-import AccountEdit from 'mdi-material-ui/AccountEdit'
-import {
-  Box,
-  CardActions,
-  Grid,
-  IconButton,
-  InputAdornment,
-  TextField,
-  ThemeProvider,
-  createTheme,
-  useMediaQuery
-} from '@mui/material'
-import Magnify from 'mdi-material-ui/Magnify'
+import { Box, Grid, TextField, ThemeProvider, createTheme } from '@mui/material'
 
 import Typography from '@mui/material/Typography'
 
 import Modal from 'react-modal'
-
-import FetchOverviewTableData from 'src/hooks/FetchOverviewTableData'
-import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
-import FetchSalonMangeData from 'src/hooks/FetchSalonMangeData'
 import toast from 'react-hot-toast'
-import axios from 'axios'
 
 const customStyles = {
   content: {
@@ -71,159 +45,7 @@ const theme = createTheme({
   }
 })
 
-const MainManageModal = () => {
-  const [modalIsOpen, setIsOpen] = useState(false)
-  const [selectedSalon, setSelectSalon] = useState({
-    SalonName: '',
-    Address: '',
-    Name: '',
-    Phone: '',
-    CreateDT: '',
-    Amount: '',
-    Remaining: '',
-    ModalStatus: '',
-    LastActivation: '',
-    AdID: '',
-    SalonID: '',
-    SalonLink: '',
-    CustomerLink: ''
-  })
-
-  const { mainManageDT } = FetchSalonMangeData()
-
-  const openModal = id => {
-    setIsOpen(true)
-
-    const findSelectedSalon = mainManageDT.find(salonAdmin => salonAdmin.AdID == id)
-
-    setSelectSalon({
-      SalonName: findSelectedSalon.SalonName,
-      Address: findSelectedSalon.Address,
-      Name: findSelectedSalon.Name,
-      Phone: findSelectedSalon.Phone,
-      CreateDT: findSelectedSalon.CreateDT,
-      Amount: findSelectedSalon.Amount,
-      Remaining: findSelectedSalon.Remaining,
-      ModalStatus: findSelectedSalon.Status,
-      LastActivation: findSelectedSalon.LastActivation,
-      AdID: findSelectedSalon.AdID,
-      SalonID: findSelectedSalon.SalonID,
-      SalonLink: findSelectedSalon.SalonLink,
-      CustomerLink: findSelectedSalon.CustomerLink
-    })
-  }
-
-  const closeModal = () => {
-    setIsOpen(false)
-  }
-
-  const handleModalChange = prop => event => {
-    setSelectSalon(prevState => ({
-      ...prevState,
-      [prop]: event.target.value
-    }))
-  }
-
-  const updateSalonInfo = async event => {
-    event.preventDefault()
-
-    if (
-      !selectedSalon.SalonName ||
-      !selectedSalon.Address ||
-      !selectedSalon.Name ||
-      !selectedSalon.Phone ||
-      !selectedSalon.Amount ||
-      !selectedSalon.ModalStatus ||
-      !selectedSalon.LastActivation
-    )
-      return toast.error('Fill all inputfields.')
-
-    const requestData = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }
-
-    const currUsername = window.localStorage.getItem('username')
-
-    const currentDate = new Date()
-    const currentYear = currentDate.getFullYear()
-    const currentMonth = currentDate.getMonth() + 1
-    const currentDay = currentDate.getDate()
-    const currentHour = currentDate.getHours()
-    const currentMinute = currentDate.getMinutes()
-    const currentSecond = currentDate.getSeconds()
-    const TodayDT = `${currentYear}-${currentMonth}-${currentDay} ${currentHour}:${currentMinute}:${currentSecond}`
-
-    const params = new URLSearchParams()
-    params.append('AdID', selectedSalon.AdID)
-    params.append('SalonID', selectedSalon.SalonID)
-    params.append('SalonName', selectedSalon.SalonName)
-    params.append('Address', selectedSalon.Address)
-    params.append('Name', selectedSalon.Name)
-    params.append('Phone', selectedSalon.Phone)
-    params.append('Amount', selectedSalon.Amount)
-    params.append('Status', selectedSalon.ModalStatus)
-    params.append('LastActivation', selectedSalon.LastActivation)
-    params.append('TodayDT', TodayDT)
-    params.append('Username', currUsername)
-
-    try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_manage.php',
-        params,
-        requestData
-      )
-      const data = await response.data
-      if (data) {
-        fetchSalonManageData()
-        closeModal()
-        data == 'Success' ? toast.success(data) : toast.error(data)
-        setSelectSalon({
-          SalonName: '',
-          Address: '',
-          Name: '',
-          Phone: '',
-          Amount: '',
-          Status: ''
-        })
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const deleteSalon = async id => {
-    const confirmToDelete = confirm('Are sure to delete, this will be deleted every where even database?')
-    if (!confirmToDelete) return
-
-    const currUsername = window.localStorage.getItem('username')
-
-    const requestData = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }
-
-    const params = new URLSearchParams()
-    params.append('Username', currUsername)
-    params.append('SalonID', id)
-
-    try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/delete_salonadmin.php',
-        params,
-        requestData
-      )
-      const data = await response.data
-      if (data == 'Success') {
-        toast.success(data)
-        closeModal()
-        fetchSalonManageData()
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
+const MainManageModal = ({ isOpen, closeModal, selectedSalon, handleModalChange, updateSalonInfo, deleteSalon }) => {
   const copyToClipboard = inputId => {
     const inputElement = document.getElementById(inputId)
 
@@ -236,7 +58,7 @@ const MainManageModal = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} style={customStyles} contentLabel='Main Modal'>
+      <Modal isOpen={isOpen} onRequestClose={closeModal} style={customStyles} contentLabel='Main Modal'>
         <CardContent>
           <form onSubmit={updateSalonInfo}>
             <Grid container spacing={3} sx={{ width: 900 }}>

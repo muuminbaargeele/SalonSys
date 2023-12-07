@@ -79,7 +79,7 @@ const navigation = () => {
         title: 'Manage Service',
         icon: FormatListBulleted,
         path: '/services'
-      },
+      }
     ]
   } else {
     return [
@@ -110,7 +110,7 @@ const navigation = () => {
         title: 'Manage Service',
         icon: FormatListBulleted,
         path: '/services'
-      },
+      }
     ]
   }
 }
