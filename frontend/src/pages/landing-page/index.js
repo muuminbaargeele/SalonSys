@@ -26,6 +26,8 @@ import Select from '@mui/material/Select'
 
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import axios from 'axios'
+import { TextField } from '@mui/material'
+import toast from 'react-hot-toast'
 
 const LandingPage = () => {
   const router = useRouter()
@@ -36,6 +38,8 @@ const LandingPage = () => {
   const [salonName, setSalonName] = useState('')
   const [selectedTitle, setSelectedTitle] = useState('')
   const [selectedSubtitle, setSelectedSubtitle] = useState('')
+  const [phone, setPhone] = useState('')
+  const [name, setName] = useState('')
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -57,6 +61,7 @@ const LandingPage = () => {
           requestData
         )
         const data = await response.data
+
         setServices(data)
         if (data.length > 0 && data[0].SalonName) {
           setSalonName(data[0].SalonName)
@@ -73,6 +78,25 @@ const LandingPage = () => {
 
   const makeAppointMent = async event => {
     event.preventDefault()
+
+    if (!selectedTitle || !selectedSubtitle || !phone || !name) return toast.error('Please fill all inputfields.')
+
+    const requestData = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+
+    const params = new URLSearchParams()
+    params.append('Name', name)
+    params.append('Phone', phone)
+    params.append('selectedTitle', selectedTitle)
+    params.append('selectedSubtitle', selectedSubtitle)
+
+    try {
+      const response = await axios.post('', params, requestData)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -95,6 +119,26 @@ const LandingPage = () => {
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type='text'
+                  label='Name'
+                  placeholder='name...'
+                  value={name}
+                  onChange={event => setName(event.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  type='tel'
+                  label='Phone No.'
+                  placeholder='061xxxxxxx'
+                  value={phone}
+                  onChange={event => setPhone(event.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel id={`form-layouts-separator-select-labe`}>Title</InputLabel>
                   <Select
@@ -102,13 +146,15 @@ const LandingPage = () => {
                     id={`form-layouts-separator-select`}
                     labelId={`form-layouts-separator-select-label`}
                     value={selectedTitle}
-                    onChange={e => setSelectedTitle(e.target.value)}
+                    onChange={event => setSelectedTitle(event.target.value)}
                   >
-                    {services.map((item, index) => (
-                      <MenuItem key={item.serviceId} value={item.Title}>
-                        {item.Title}
-                      </MenuItem>
-                    ))}
+                    {Array.isArray(services) &&
+                      services.length > 0 &&
+                      services.map((item, index) => (
+                        <MenuItem key={item.serviceId || index} value={item.Title}>
+                          {item.Title}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -120,13 +166,15 @@ const LandingPage = () => {
                     id={`form-layouts-separator-select`}
                     labelId={`form-layouts-separator-select-label`}
                     value={selectedSubtitle}
-                    onChange={e => setSelectedSubtitle(e.target.value)}
+                    onChange={event => setSelectedSubtitle(event.target.value)}
                   >
-                    {services.map(item => (
-                      <MenuItem key={item.serviceId} value={item.SubTitle}>
-                        {item.SubTitle}
-                      </MenuItem>
-                    ))}
+                    {Array.isArray(services) &&
+                      services.length > 0 &&
+                      services.map((item, index) => (
+                        <MenuItem key={item.serviceId || index} value={item.SubTitle}>
+                          {item.SubTitle}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Grid>

@@ -22,9 +22,6 @@ import InputAdornment from '@mui/material/InputAdornment'
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 
-// ** Configs
-import themeConfig from 'src/configs/themeConfig'
-
 // ** Layout Import
 import BlankLayout from 'src/@core/layouts/BlankLayout'
 
@@ -32,6 +29,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
 import { useAuth } from 'src/context/AuthContext'
+import axios from 'axios'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -40,6 +38,8 @@ const Card = styled(MuiCard)(({ theme }) => ({
 
 const LoginPage = () => {
   // ** State
+  const [isLoadingLoggedUser, setIsloadingLoggedUser] = useState(false)
+  const [loggedName, setLoggedName] = useState(false)
   const [values, setValues] = useState({
     password: '',
     username: '',
@@ -49,6 +49,7 @@ const LoginPage = () => {
   // ** Hook
   const theme = useTheme()
   const router = useRouter()
+  const { id } = router.query
 
   const { login, isLoading, isLogin, username } = useAuth()
 
@@ -72,9 +73,42 @@ const LoginPage = () => {
   useEffect(() => {
     if (isLogin) {
       router.push('/')
-      console.log(username)
+      return
     }
   }, [router])
+
+  useEffect(() => {
+    const fetchLoggedUserByID = async () => {
+      if (!id) return
+
+      const requestData = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+
+      const params = new URLSearchParams()
+      params.append('SalonID', id)
+
+      setIsloadingLoggedUser(true)
+      try {
+        const response = await axios.post(
+          'https://salonsys.000webhostapp.com/backend/api/get_saloninfo.php',
+          params,
+          requestData
+        )
+        const data = await response.data
+        if (data.length > 0 && data[0].SalonName) {
+          setLoggedName(data[0].SalonName)
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        setIsloadingLoggedUser(false)
+      }
+    }
+
+    fetchLoggedUserByID()
+  }, [id])
 
   return (
     <Box className='content-center'>
@@ -150,12 +184,12 @@ const LoginPage = () => {
                 fontSize: '1.5rem !important'
               }}
             >
-              {themeConfig.templateName}
+              {isLoadingLoggedUser ? 'Loading...' : loggedName ? loggedName : 'SAFARITECH'}
             </Typography>
           </Box>
           <Box sx={{ mb: 6 }}>
-            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5 }}>
-              Welcome to {themeConfig.templateName}! 👋🏻
+            <Typography variant='h5' sx={{ fontWeight: 600, marginBottom: 1.5, textTransform: 'capitalize' }}>
+              Welcome to {isLoadingLoggedUser ? 'Loading...' : loggedName ? loggedName : 'SAFARITECH'}! 👋🏻
             </Typography>
             <Typography variant='body2'>Please sign-in to your account</Typography>
           </Box>

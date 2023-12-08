@@ -25,6 +25,7 @@ import MainAdminManage from 'src/@core/components/manage/MainAdminManage'
 import SalonAdminManage from 'src/@core/components/manage/SalonAdminManage'
 import MainManageModal from 'src/@core/components/modals/MainManageModal'
 import SalonManageModal from 'src/@core/components/modals/SalonManageModal'
+import { getCurrentDate } from 'src/utils/GetCurrentDate'
 
 let columns = []
 
@@ -69,53 +70,7 @@ const ManageTable = props => {
   const { values } = FetchLoggedUserInfo()
   const { salonManageData, setSalonManageData, mainManageDT, setMainManageDT, fetchSalonManageData } =
     FetchSalonMangeData()
-
-  const openModal = id => {
-    setIsOpen(true)
-
-    const findSelectedSalon = mainManageDT.find(salonAdmin => salonAdmin.AdID == id)
-
-    setSelectSalon({
-      SalonName: findSelectedSalon.SalonName,
-      Address: findSelectedSalon.Address,
-      Name: findSelectedSalon.Name,
-      Phone: findSelectedSalon.Phone,
-      CreateDT: findSelectedSalon.CreateDT,
-      Amount: findSelectedSalon.Amount,
-      Remaining: findSelectedSalon.Remaining,
-      ModalStatus: findSelectedSalon.Status,
-      LastActivation: findSelectedSalon.LastActivation,
-      AdID: findSelectedSalon.AdID,
-      SalonID: findSelectedSalon.SalonID,
-      SalonLink: findSelectedSalon.SalonLink,
-      CustomerLink: findSelectedSalon.CustomerLink
-    })
-  }
-
-  const closeModal = () => {
-    setIsOpen(false)
-  }
-
-  const openSalonManageModal = id => {
-    setIsSalonManageModalOpen(true)
-
-    const findSelectedEmployer = salonManageData.find(employer => employer.AdID == id)
-    console.log(findSelectedEmployer)
-
-    setSelectSalonEmployer({
-      EmployerName: findSelectedEmployer.Name,
-      EmployerPhone: findSelectedEmployer.Phone,
-      EmployerCreateDT: findSelectedEmployer.CreateDT,
-      EmployerUserName: findSelectedEmployer.Username,
-      EmployerRole: findSelectedEmployer.Role,
-      EmployerShift: findSelectedEmployer.Shift,
-      EmployerID: findSelectedEmployer.AdID
-    })
-  }
-
-  const closeSalonManageModal = () => {
-    setIsSalonManageModalOpen(false)
-  }
+  console.log(mainManageDT)
 
   if (values.role == 'MainAdmin') {
     // Main admin
@@ -188,6 +143,52 @@ const ManageTable = props => {
     fetchOverviewTable()
   }, [])
 
+  const openModal = id => {
+    setIsOpen(true)
+
+    const findSelectedSalon = mainManageDT.find(salonAdmin => salonAdmin.AdID == id)
+
+    setSelectSalon({
+      SalonName: findSelectedSalon.SalonName,
+      Address: findSelectedSalon.Address,
+      Name: findSelectedSalon.Name,
+      Phone: findSelectedSalon.Phone,
+      CreateDT: findSelectedSalon.CreateDT,
+      Amount: findSelectedSalon.Amount,
+      Remaining: findSelectedSalon.Remaining,
+      ModalStatus: findSelectedSalon.Status,
+      LastActivation: findSelectedSalon.LastActivation,
+      AdID: findSelectedSalon.AdID,
+      SalonID: findSelectedSalon.SalonID,
+      SalonLink: findSelectedSalon.SalonLink,
+      CustomerLink: findSelectedSalon.CustomerLink
+    })
+  }
+
+  const closeModal = () => {
+    setIsOpen(false)
+  }
+
+  const openSalonManageModal = id => {
+    setIsSalonManageModalOpen(true)
+
+    const findSelectedEmployer = salonManageData.find(employer => employer.AdID == id)
+
+    setSelectSalonEmployer({
+      EmployerName: findSelectedEmployer.Name,
+      EmployerPhone: findSelectedEmployer.Phone,
+      EmployerCreateDT: findSelectedEmployer.CreateDT,
+      EmployerUserName: findSelectedEmployer.Username,
+      EmployerRole: findSelectedEmployer.Role,
+      EmployerShift: findSelectedEmployer.Shift,
+      EmployerID: findSelectedEmployer.AdID
+    })
+  }
+
+  const closeSalonManageModal = () => {
+    setIsSalonManageModalOpen(false)
+  }
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -232,14 +233,7 @@ const ManageTable = props => {
 
     const currUsername = window.localStorage.getItem('username')
 
-    const currentDate = new Date()
-    const currentYear = currentDate.getFullYear()
-    const currentMonth = currentDate.getMonth() + 1
-    const currentDay = currentDate.getDate()
-    const currentHour = currentDate.getHours()
-    const currentMinute = currentDate.getMinutes()
-    const currentSecond = currentDate.getSeconds()
-    const TodayDT = `${currentYear}-${currentMonth}-${currentDay} ${currentHour}:${currentMinute}:${currentSecond}`
+    const currentDate = getCurrentDate()
 
     const params = new URLSearchParams()
     params.append('AdID', selectedSalon.AdID)
@@ -251,7 +245,7 @@ const ManageTable = props => {
     params.append('Amount', selectedSalon.Amount)
     params.append('Status', selectedSalon.ModalStatus)
     params.append('LastActivation', selectedSalon.LastActivation)
-    params.append('TodayDT', TodayDT)
+    params.append('TodayDT', currentDate)
     params.append('Username', currUsername)
 
     try {
@@ -302,8 +296,6 @@ const ManageTable = props => {
     params.append('Name', selectedSalonEmployer.EmployerName)
     params.append('Phone', selectedSalonEmployer.EmployerPhone)
     params.append('Shift', selectedSalonEmployer.EmployerShift)
-
-    console.log('emlo', selectedSalonEmployer.EmployerName)
 
     try {
       const response = await axios.post(
@@ -483,11 +475,15 @@ const ManageTable = props => {
           <TableBody>
             {values.role == 'MainAdmin'
               ? // Main admin
+                Array.isArray(mainManageDT) &&
+                mainManageDT.length > 0 &&
                 mainManageDT.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return <MainAdminManage row={row} columns={columns} index={index} openModal={openModal} />
                 })
               : values.role == 'SalonAdmin'
               ? // Salon admin
+                Array.isArray(salonManageData) &&
+                salonManageData.length > 0 &&
                 salonManageData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
                   return (
                     <SalonAdminManage

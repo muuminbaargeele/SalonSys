@@ -10,10 +10,9 @@ import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import FormLayoutsService from 'src/views/form-layouts/FormLayoutService'
 
 const Register = () => {
-  const { isLogin, username } = useAuth()
+  const { isLogin } = useAuth()
 
   const { values } = FetchLoggedUserInfo()
-  console.log('role:', values.role)
 
   const router = useRouter()
 
@@ -24,7 +23,6 @@ const Register = () => {
       if (values.role == 'MainAdmin') {
         router.push('/pages/error')
       }
-      console.log(values.role)
     }
   }, [router, values])
 

@@ -56,9 +56,7 @@ const AccountSettings = () => {
   useEffect(() => {
     if (!isLogin) {
       router.push('/login')
-      console.log(role)
-    } else {
-      console.log(role)
+      return
     }
   }, [router])
 

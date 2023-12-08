@@ -29,19 +29,11 @@ import axios from 'axios'
 
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import { useEffect } from 'react'
+import { getCurrentDate } from 'src/utils/GetCurrentDate'
 
 const FormLayoutsSeparator = () => {
-
   const [currentUrl, SetCurrentUrl] = useState('')
   const [loginUrl, SetLoginUrl] = useState('')
-
-  useEffect(() => {
-    // const currentUrl = window.location.origin + "/";
-    SetCurrentUrl(window.location.origin + "/landing-page")
-    SetLoginUrl(window.location.origin + "/login")
-  }, [])
-  console.log(currentUrl)
-
   const [values, setValues] = useState({
     ownerName: '',
     phone: '',
@@ -53,6 +45,11 @@ const FormLayoutsSeparator = () => {
     address: '',
     shift: ''
   })
+
+  useEffect(() => {
+    SetCurrentUrl(window.location.origin + '/landing-page')
+    SetLoginUrl(window.location.origin + '/login')
+  }, [])
 
   const { values: currentUserInfo } = FetchLoggedUserInfo()
   // Handle Change
@@ -88,20 +85,13 @@ const FormLayoutsSeparator = () => {
         return toast.error('Fill all inputfields.')
     }
 
-    const currentDate = new Date()
-    const currentYear = currentDate.getFullYear()
-    const currentMonth = currentDate.getMonth() + 1
-    const currentDay = currentDate.getDate()
-    const currentHour = currentDate.getHours()
-    const currentMinute = currentDate.getMinutes()
-    const currentSecond = currentDate.getSeconds()
-    const date = `${currentYear}-${currentMonth}-${currentDay} ${currentHour}:${currentMinute}:${currentSecond}`
+    const currDate = getCurrentDate()
 
     const currUsername = window.localStorage.getItem('username')
 
     const params = new URLSearchParams()
     params.append('Username', currUsername)
-    params.append('CreateDT', date)
+    params.append('CreateDT', currDate)
     params.append('Name', values.ownerName)
     params.append('NewUsername', values.username)
     params.append('Phone', values.phone)
@@ -109,6 +99,7 @@ const FormLayoutsSeparator = () => {
     params.append('Password', values.password)
 
     if (currentUserInfo.role == 'MainAdmin') {
+      // Main admin params
       params.append('Amount', values.amount)
       params.append('SalonName', values.salonName)
       params.append('Address', values.address)
@@ -152,7 +143,7 @@ const FormLayoutsSeparator = () => {
 
   return (
     <Card>
-      <CardHeader title="Register New User" titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader title='Register New User' titleTypographyProps={{ variant: 'h6' }} />
       <Divider sx={{ margin: 0 }} />
       <form onSubmit={handleRegister}>
         <CardContent>
@@ -183,7 +174,7 @@ const FormLayoutsSeparator = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                type='number'
+                type='tel'
                 label='Phone No.'
                 placeholder='061xxxxxxx'
                 value={values.phone}
@@ -299,9 +290,6 @@ const FormLayoutsSeparator = () => {
         <CardActions>
           <Button size='large' type='submit' sx={{ mr: 2 }} variant='contained'>
             Submit
-          </Button>
-          <Button size='large' color='secondary' variant='outlined'>
-            Cancel
           </Button>
         </CardActions>
       </form>

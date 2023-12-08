@@ -24,10 +24,12 @@ import { useEffect } from 'react'
 import { useAuth } from 'src/context/AuthContext'
 import FetchOverviewData from 'src/hooks/FetchOverviewData'
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
-// import BasicDateTimePicker from './../views/date-time-picker/DateTimePicker'
 
 const Dashboard = () => {
-  const { isLogin, username } = useAuth()
+  const { isLogin } = useAuth()
+
+  const { overview, isLoading } = FetchOverviewData()
+  const { values } = FetchLoggedUserInfo()
 
   const router = useRouter()
 
@@ -35,13 +37,8 @@ const Dashboard = () => {
     if (!isLogin) {
       router.push('/login')
       return
-    } else {
-      console.log(username)
     }
   }, [router])
-
-  const { overview, isLoading } = FetchOverviewData()
-  const { values } = FetchLoggedUserInfo()
 
   return (
     <ApexChartWrapper>
@@ -69,9 +66,6 @@ const Dashboard = () => {
             </Grid>
           </Grid>
         </Grid>
-        {/* <Grid item xs={12}>
-          <BasicDateTimePicker />
-        </Grid> */}
         <Grid item xs={12}>
           <Table />
         </Grid>

@@ -6,11 +6,7 @@ import Box from '@mui/material/Box'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
-// ** Configs
-import themeConfig from 'src/configs/themeConfig'
-
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
-import { useAuth } from 'src/context/AuthContext'
 
 // ** Styled Components
 const MenuHeaderWrapper = styled(Box)(({ theme }) => ({
@@ -43,7 +39,6 @@ const VerticalNavHeader = props => {
   // ** Hooks
   const theme = useTheme()
   const { values, isLoading } = FetchLoggedUserInfo()
-  const { isLogin } = useAuth()
 
   return (
     <MenuHeaderWrapper className='nav-header' sx={{ pl: 6 }}>
@@ -112,14 +107,7 @@ const VerticalNavHeader = props => {
               </g>
             </svg>
             <HeaderTitle variant='h6' sx={{ ml: 3 }}>
-              {/* {themeConfig.templateName} */}
-              {isLoading
-                ? 'Loading...'
-                : values.role == 'MainAdmin'
-                ? 'SAFARITECH'
-                : values.role == 'SalonAdmin'
-                ? values.salonName
-                : ''}
+              {isLoading ? 'Loading...' : values.role == 'MainAdmin' ? 'SAFARITECH' : values.salonName}
             </HeaderTitle>
           </StyledLink>
         </Link>

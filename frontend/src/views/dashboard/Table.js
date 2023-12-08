@@ -26,7 +26,6 @@ const DashboardTable = props => {
 
   useEffect(() => {
     fetchOverviewTable()
-    console.log('rd:-', rowsData)
   }, [])
 
   const handleSearch = event => {
@@ -61,7 +60,10 @@ const DashboardTable = props => {
             justifyContent: 'space-between'
           }}
         >
-          <CardHeader title='Salons' titleTypographyProps={{ variant: 'h6' }} />
+          <CardHeader
+            title={values.role == 'MainAdmin' ? 'Salons' : 'Customers'}
+            titleTypographyProps={{ variant: 'h6' }}
+          />
 
           <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
             {hidden ? (
@@ -96,31 +98,17 @@ const DashboardTable = props => {
             <TableRow>
               {values.role == 'MainAdmin' ? (
                 // Main Admin
-                <>
-                  <TableCell>Salon Name</TableCell>
-                  <TableCell>Owner Name</TableCell>
-                  <TableCell>Address</TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Remaining</TableCell>
-                </>
+                <MainAdminDashoardTableHead />
               ) : (
                 // Salon Admin
-                <>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Title</TableCell>
-                  <TableCell>SubTitle</TableCell>
-                  <TableCell>Price</TableCell>
-                  <TableCell>Que No.</TableCell>
-                  <TableCell>ArrivalTime</TableCell>
-                  <TableCell>Status</TableCell>
-                </>
+                <SalonAdminDashbardTableHead />
               )}
             </TableRow>
           </TableHead>
           <TableBody>
             {rowsData &&
+              Array.isArray(rowsData) &&
+              rowsData.length > 0 &&
               rowsData?.map((row, index) => (
                 <TableRow
                   hover
@@ -128,61 +116,9 @@ const DashboardTable = props => {
                   sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}
                 >
                   {values.role == 'MainAdmin' ? (
-                    <>
-                      {/* Main admin */}
-                      <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                          <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
-                            {row.SalonName}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>{row.Name}</TableCell>
-                      <TableCell>{row.Address}</TableCell>
-                      <TableCell>{row.Phone}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={row.Status == 1 ? 'Active' : 'In Active'}
-                          color={row.Status == 1 ? 'success' : 'error'}
-                          sx={{
-                            height: 24,
-                            fontSize: '0.75rem',
-                            textTransform: 'capitalize',
-                            '& .MuiChip-label': { fontWeight: 500 }
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell>{`${row.Remaining} days`}</TableCell>
-                    </>
+                    <MainAdminDashoardTable row={row} />
                   ) : (
-                    <>
-                      {/* Salon Admin */}
-                      <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                          <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
-                            {row.CustomerName}
-                          </Typography>
-                        </Box>
-                      </TableCell>
-                      <TableCell>{row.CustomerPhone}</TableCell>
-                      <TableCell>{row.Title}</TableCell>
-                      <TableCell>{row.SubTitle}</TableCell>
-                      <TableCell>{row.Price}</TableCell>
-                      <TableCell>{row.QueNO}</TableCell>
-                      <TableCell>{row.ArrivalTime}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={row.Status == 0 ? 'Not Started' : row.Status == 1 ? 'In Progress' : 'Done'}
-                          color={row.Status == 0 ? 'secondary' : row.Status == 1 ? 'info' : 'success'}
-                          sx={{
-                            height: 24,
-                            fontSize: '0.75rem',
-                            textTransform: 'capitalize',
-                            '& .MuiChip-label': { fontWeight: 500 }
-                          }}
-                        />
-                      </TableCell>
-                    </>
+                    <SalonAdminDashbardTable row={row} />
                   )}
                 </TableRow>
               ))}
@@ -194,3 +130,89 @@ const DashboardTable = props => {
 }
 
 export default DashboardTable
+
+const MainAdminDashoardTable = ({ row }) => {
+  return (
+    <>
+      <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>{row.SalonName}</Typography>
+        </Box>
+      </TableCell>
+      <TableCell>{row.Name}</TableCell>
+      <TableCell>{row.Address}</TableCell>
+      <TableCell>{row.Phone}</TableCell>
+      <TableCell>
+        <Chip
+          label={row.Status == 1 ? 'Active' : 'In Active'}
+          color={row.Status == 1 ? 'success' : 'error'}
+          sx={{
+            height: 24,
+            fontSize: '0.75rem',
+            textTransform: 'capitalize',
+            '& .MuiChip-label': { fontWeight: 500 }
+          }}
+        />
+      </TableCell>
+      <TableCell>{`${row.Remaining} days`}</TableCell>
+    </>
+  )
+}
+
+const MainAdminDashoardTableHead = () => {
+  return (
+    <>
+      <TableCell>Salon Name</TableCell>
+      <TableCell>Owner Name</TableCell>
+      <TableCell>Address</TableCell>
+      <TableCell>Phone</TableCell>
+      <TableCell>Status</TableCell>
+      <TableCell>Remaining</TableCell>
+    </>
+  )
+}
+
+const SalonAdminDashbardTable = ({ row }) => {
+  return (
+    <>
+      <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>{row.CustomerName}</Typography>
+        </Box>
+      </TableCell>
+      <TableCell>{row.CustomerPhone}</TableCell>
+      <TableCell>{row.Title}</TableCell>
+      <TableCell>{row.SubTitle}</TableCell>
+      <TableCell>{row.Price}</TableCell>
+      <TableCell>{row.QueNO}</TableCell>
+      <TableCell>{row.ArrivalTime}</TableCell>
+      <TableCell>
+        <Chip
+          label={row.Status == 0 ? 'Not Started' : row.Status == 1 ? 'In Progress' : 'Done'}
+          color={row.Status == 0 ? 'secondary' : row.Status == 1 ? 'info' : 'success'}
+          sx={{
+            height: 24,
+            fontSize: '0.75rem',
+            textTransform: 'capitalize',
+            '& .MuiChip-label': { fontWeight: 500 }
+          }}
+        />
+      </TableCell>
+    </>
+  )
+}
+
+const SalonAdminDashbardTableHead = () => {
+  return (
+    <>
+      <TableCell>Name</TableCell>
+      <TableCell>Phone</TableCell>
+      <TableCell>Title</TableCell>
+      <TableCell>SubTitle</TableCell>
+      <TableCell>Price</TableCell>
+      <TableCell>Que No.</TableCell>
+      <TableCell>ArrivalTime</TableCell>
+      <TableCell>Status</TableCell>
+    </>
+  )
+}

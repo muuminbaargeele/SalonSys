@@ -106,7 +106,6 @@ const ManageTable = props => {
   // ** Hook
   const hiddenSm = useMediaQuery(theme => theme.breakpoints.down('sm'))
   const { fetchServicesData, services, setServices } = FetchServicesData()
-  console.log('server', services)
 
   const closeModal = () => {
     setIsServiceModal(false)
