@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Card from '@mui/material/Card'
 import Chip from '@mui/material/Chip'
+import CalendarRange from 'mdi-material-ui/CalendarRange'
 import Table from '@mui/material/Table'
 import TableRow from '@mui/material/TableRow'
 import TableHead from '@mui/material/TableHead'
@@ -13,22 +14,36 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import Typography from '@mui/material/Typography'
 import TableContainer from '@mui/material/TableContainer'
-import { CardActions, CardHeader, Divider, InputAdornment, InputLabel, TextField } from '@mui/material'
+import {
+  Button,
+  CardActions,
+  CardHeader,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  InputAdornment,
+  InputLabel,
+  TextField
+} from '@mui/material'
 import Magnify from 'mdi-material-ui/Magnify'
-import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import FetchOverviewTableData from 'src/hooks/FetchOverviewTableData'
 import axios from 'axios'
+import DateTimePicker from 'react-datetime-picker'
+import 'react-datetime-picker/dist/DateTimePicker.css'
+import 'react-calendar/dist/Calendar.css'
+import 'react-clock/dist/Clock.css'
 
 const DashboardTable = props => {
   const { hidden, hiddenSm } = props
 
   const [inputValue, setInputValue] = useState('')
-  const [actionValues, setActionValues] = useState({});
+  const [actionValues, setActionValues] = useState({})
 
-
-  const { values } = FetchLoggedUserInfo()
+  const [selectedRow, setSelectedRow] = useState(null)
 
   const { fetchOverviewTable, rowsData, setRowsData } = FetchOverviewTableData()
 
@@ -64,23 +79,29 @@ const DashboardTable = props => {
   }
 
   const handleActionChange = (event, id) => {
-    const selectedValue = event.target.value;
+    const selectedValue = event.target.value
 
     // Log the selected value for the clicked row
-    console.log(`Row ID: ${id}, Selected Value: ${selectedValue}`);
+    console.log(`Row ID: ${id}, Selected Value: ${selectedValue}`)
     updateRequest(id, selectedValue)
 
-
-
     // Update the state for the specific row
-    setActionValues((prevValues) => ({
+    setActionValues(prevValues => ({
       ...prevValues,
-      [id]: selectedValue,
-    }));
-  };
+      [id]: selectedValue
+    }))
+  }
+
+  const refreshData = () => {
+    setTimeout(() => {
+      fetchOverviewTable()
+      console.log('ok')
+    }, 3000)
+  }
 
   useEffect(() => {
     fetchOverviewTable()
+    // refreshData()
   }, [])
 
   const handleSearch = event => {
@@ -101,6 +122,47 @@ const DashboardTable = props => {
         toast.error('Not found')
       }
       setRowsData(filteredResults)
+    }
+  }
+
+  const handleDateTimeChange = async (newDate, reqId) => {
+    if (!newDate) return
+
+    const currentDate = newDate
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth() + 1
+    const currentDay = currentDate.getDate()
+    const currentHour = currentDate.getHours()
+    const currentMinute = currentDate.getMinutes()
+    const currentSecond = currentDate.getSeconds()
+    const TodayDT = `${currentYear}-${currentMonth}-${currentDay} ${currentHour}:${currentMinute}:${currentSecond}`
+
+    const currUsername = window.localStorage.getItem('username')
+
+    const params = new URLSearchParams()
+    params.append('Username', currUsername)
+    params.append('ReqId', reqId)
+    params.append('ArrivalTime', TodayDT)
+
+    const requestData = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    }
+
+    try {
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/set_arrivaltime.php',
+        params,
+        requestData
+      )
+      const data = await response.data
+      if (data == 'Success') {
+        fetchOverviewTable()
+        setSelectedRow(null)
+        toast.success(data)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -160,7 +222,8 @@ const DashboardTable = props => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rowsData &&
+            {Array.isArray(rowsData) &&
+              rowsData.length > 0 &&
               rowsData?.map((row, index) => (
                 <TableRow
                   hover
@@ -179,7 +242,37 @@ const DashboardTable = props => {
                   <TableCell>{row.SubTitle}</TableCell>
                   <TableCell>{row.Price}</TableCell>
                   <TableCell>{row.QueNO}</TableCell>
-                  <TableCell>{row.ArrivalTime}</TableCell>
+
+                  <TableCell>
+                    {row.ArrivalTime && (
+                      <>
+                        <span>{row.ArrivalTime}</span>
+                        <Button onClick={() => setSelectedRow(row)} variant='outlined'>
+                          <CalendarRange />
+                        </Button>
+                      </>
+                    )}
+
+                    {!row.ArrivalTime && (
+                      <Button onClick={() => setSelectedRow(row)} variant='outlined'>
+                        <CalendarRange />
+                      </Button>
+                    )}
+                  </TableCell>
+
+                  {selectedRow && (
+                    <Dialog open={!!selectedRow} onClose={() => setSelectedRow(null)}>
+                      <DialogTitle>Select Date and Time</DialogTitle>
+                      <DialogContent sx={{ height: 300, width: 500 }}>
+                        <DateTimePickerComponent row={selectedRow} onChange={handleDateTimeChange} />
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => setSelectedRow(null)} color='primary'>
+                          Close
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                  )}
                   <TableCell>
                     <Chip
                       label={row.Status == 0 ? 'Not Started' : row.Status == 1 ? 'In Progress' : 'Done'}
@@ -194,12 +287,12 @@ const DashboardTable = props => {
                   </TableCell>
                   <Grid item xs={12} sm={6} sx={{ marginBottom: 3, marginTop: 3, marginRight: 3 }}>
                     <FormControl fullWidth>
-                      <InputLabel id='form-layouts-separator-select-label'>Status</InputLabel>
                       <Select
+                        sx={{ fontSize: 14 }}
                         id='form-layouts-separator-select'
                         labelId='form-layouts-separator-select-label'
-                        value={actionValues[row.ReqId] || row.Status}  // Use actionValues[row.ReqId]
-                        onChange={(event) => handleActionChange(event, row.ReqId)}
+                        value={actionValues[row.ReqId] || row.Status} // Use actionValues[row.ReqId]
+                        onChange={event => handleActionChange(event, row.ReqId)}
                       >
                         <MenuItem value='0'>Not Started</MenuItem>
                         <MenuItem value='1'>Progress</MenuItem>
@@ -217,3 +310,14 @@ const DashboardTable = props => {
 }
 
 export default DashboardTable
+
+const DateTimePickerComponent = ({ row, onChange }) => {
+  const [date, setDate] = useState(new Date())
+
+  const handleDateTimeChange = newDate => {
+    setDate(newDate)
+    onChange(newDate, row.ReqId)
+  }
+
+  return <DateTimePicker onChange={handleDateTimeChange} value={date} />
+}

@@ -28,6 +28,7 @@ import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import axios from 'axios'
 import { TextField } from '@mui/material'
 import toast from 'react-hot-toast'
+import { getCurrentDate } from 'src/utils/GetCurrentDate'
 
 const LandingPage = () => {
   const router = useRouter()
@@ -36,6 +37,7 @@ const LandingPage = () => {
   const [isLoading, setIsloading] = useState(false)
   const [services, setServices] = useState([])
   const [salonName, setSalonName] = useState('')
+  const [serviceID, setServiceID] = useState('')
   const [selectedTitle, setSelectedTitle] = useState('')
   const [selectedSubtitle, setSelectedSubtitle] = useState('')
   const [phone, setPhone] = useState('')
@@ -61,10 +63,12 @@ const LandingPage = () => {
           requestData
         )
         const data = await response.data
+        console.log(data)
 
         setServices(data)
         if (data.length > 0 && data[0].SalonName) {
           setSalonName(data[0].SalonName)
+          setServiceID(data[0].serviceId)
         }
       } catch (error) {
         console.log(error)
@@ -86,14 +90,26 @@ const LandingPage = () => {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     }
 
+    const currentDate = getCurrentDate()
+
     const params = new URLSearchParams()
-    params.append('Name', name)
-    params.append('Phone', phone)
+    params.append('CustomerName', name)
+    params.append('CustomerPhone', phone)
+    params.append('CreateDT', currentDate)
+    params.append('ServiceID', serviceID)
     params.append('selectedTitle', selectedTitle)
     params.append('selectedSubtitle', selectedSubtitle)
 
     try {
-      const response = await axios.post('', params, requestData)
+      const response = await axios.post(
+        'https://salonsys.000webhostapp.com/backend/api/booking.php',
+        params,
+        requestData
+      )
+      const data = await response.data
+      if (data == 'Success') {
+        toast.success(`Booked ${data}fully.`)
+      }
     } catch (error) {
       console.log(error)
     }
