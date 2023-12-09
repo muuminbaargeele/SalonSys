@@ -102,8 +102,8 @@ const DashboardTable = props => {
   useEffect(() => {
     fetchOverviewTable()
 
-    // refreshData()
-  }, [])
+    refreshData()
+  }, [refreshData])
 
   const handleSearch = event => {
     const searchValue = event.target.value
