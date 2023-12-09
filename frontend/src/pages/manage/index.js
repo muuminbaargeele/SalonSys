@@ -16,9 +16,10 @@ const Manage = () => {
   useEffect(() => {
     if (!isLogin) {
       router.push('/login')
-      return
+
+      return null;
     }
-  }, [router])
+  }, [router, isLogin])
 
   return (
     <Card>

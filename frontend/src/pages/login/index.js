@@ -40,6 +40,7 @@ const LoginPage = () => {
   // ** State
   const [isLoadingLoggedUser, setIsloadingLoggedUser] = useState(false)
   const [loggedName, setLoggedName] = useState(false)
+
   const [values, setValues] = useState({
     password: '',
     username: '',
@@ -73,9 +74,10 @@ const LoginPage = () => {
   useEffect(() => {
     if (isLogin) {
       router.push('/')
-      return
+
+      return null;
     }
-  }, [router])
+  }, [router, isLogin])
 
   useEffect(() => {
     const fetchLoggedUserByID = async () => {

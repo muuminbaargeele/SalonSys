@@ -24,7 +24,7 @@ const Register = () => {
         router.push('/pages/error')
       }
     }
-  }, [router, values])
+  }, [router, values, isLogin])
 
   return (
     <Card>

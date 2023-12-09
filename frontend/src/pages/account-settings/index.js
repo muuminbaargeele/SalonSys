@@ -55,10 +55,11 @@ const AccountSettings = () => {
 
   useEffect(() => {
     if (!isLogin) {
-      router.push('/login')
-      return
+      router.push('/login');
+
+      return null;
     }
-  }, [router])
+  }, [router, isLogin])
 
   return (
     <Card>

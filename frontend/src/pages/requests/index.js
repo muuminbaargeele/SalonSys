@@ -25,7 +25,7 @@ import {
   Divider,
   InputAdornment,
   InputLabel,
-  TextField
+  TextField, IconButton, Menu
 } from '@mui/material'
 import Magnify from 'mdi-material-ui/Magnify'
 import { useEffect, useState } from 'react'
@@ -101,6 +101,7 @@ const DashboardTable = props => {
 
   useEffect(() => {
     fetchOverviewTable()
+
     // refreshData()
   }, [])
 
