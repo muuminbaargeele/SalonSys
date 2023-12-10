@@ -102,8 +102,8 @@ const DashboardTable = props => {
   useEffect(() => {
     fetchOverviewTable()
 
-    refreshData()
-  }, [refreshData])
+    // refreshData()
+  }, [])
 
   const handleSearch = event => {
     const searchValue = event.target.value
@@ -247,7 +247,7 @@ const DashboardTable = props => {
                   <TableCell>
                     {row.ArrivalTime && (
                       <>
-                        <span>{row.ArrivalTime}</span>
+                        <span style={{ paddingRight: 10 }}>{row.ArrivalTime}</span>
                         <Button onClick={() => setSelectedRow(row)} variant='outlined'>
                           <CalendarRange />
                         </Button>
@@ -264,7 +264,7 @@ const DashboardTable = props => {
                   {selectedRow && (
                     <Dialog open={!!selectedRow} onClose={() => setSelectedRow(null)}>
                       <DialogTitle>Select Date and Time</DialogTitle>
-                      <DialogContent sx={{ height: 300, width: 500 }}>
+                      <DialogContent sx={{ height: 330, width: 500 }}>
                         <DateTimePickerComponent row={selectedRow} onChange={handleDateTimeChange} />
                       </DialogContent>
                       <DialogActions>
