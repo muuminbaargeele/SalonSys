@@ -26,6 +26,7 @@ import SalonAdminManage from 'src/@core/components/manage/SalonAdminManage'
 import MainManageModal from 'src/@core/components/modals/MainManageModal'
 import SalonManageModal from 'src/@core/components/modals/SalonManageModal'
 import { getCurrentDate } from 'src/utils/GetCurrentDate'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 let columns = []
 
@@ -249,11 +250,7 @@ const ManageTable = props => {
     params.append('Username', currUsername)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_manage.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/update_manage.php`, params, requestData)
       const data = await response.data
       if (data) {
         fetchSalonManageData()
@@ -298,11 +295,7 @@ const ManageTable = props => {
     params.append('Shift', selectedSalonEmployer.EmployerShift)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_manage.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/update_manage.php`, params, requestData)
       const data = await response.data
       if (data) {
         fetchSalonManageData()
@@ -338,11 +331,7 @@ const ManageTable = props => {
     params.append('SalonID', id)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/delete_salonadmin.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/delete_salonadmin.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)
@@ -370,11 +359,7 @@ const ManageTable = props => {
     params.append('SalonUser', id)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/delete_salonadmin.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/delete_salonadmin.php`, params, requestData)
       const data = await response.data
       console.log(data)
       if (data == 'Success') {

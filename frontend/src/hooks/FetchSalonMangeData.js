@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useState } from 'react'
 import { useEffect } from 'react'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const FetchSalonMangeData = () => {
   const [salonManageData, setSalonManageData] = useState([])
@@ -17,11 +18,7 @@ const FetchSalonMangeData = () => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/manage.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/manage.php`, params, requestData)
       const data = await response.data
       if (data) {
         setSalonManageData(data)
@@ -44,11 +41,7 @@ const FetchSalonMangeData = () => {
       }
 
       try {
-        const response = await axios.post(
-          'https://salonsys.000webhostapp.com/backend/api/manage.php',
-          params,
-          requestData
-        )
+        const response = await axios.post(`${API_BASE_URL}/backend/api/manage.php`, params, requestData)
         const data = await response.data
         if (data) {
           setSalonManageData(data)

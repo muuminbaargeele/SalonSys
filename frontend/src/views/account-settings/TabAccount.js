@@ -20,6 +20,7 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 // ** Icons Imports
 
@@ -88,11 +89,7 @@ const TabAccount = () => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_admins.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/update_admins.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)

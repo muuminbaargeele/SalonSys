@@ -14,6 +14,7 @@ import CardActions from '@mui/material/CardActions'
 import toast from 'react-hot-toast'
 
 import axios from 'axios'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 import { getCurrentDate } from 'src/utils/GetCurrentDate'
 
@@ -50,11 +51,7 @@ const FormLayoutsSeparator = () => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/upload_service.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/upload_service.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)

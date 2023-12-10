@@ -2,9 +2,9 @@ import { createContext, useContext, useState } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
-import { useEffect } from 'react'
 
 const AuthContext = createContext(null)
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 export const AuthContextProvider = ({ children }) => {
   const initialIsLoggedIn = typeof window !== 'undefined' && window.localStorage.getItem('isLogin') === 'true'
@@ -27,7 +27,7 @@ export const AuthContextProvider = ({ children }) => {
 
     setIsLoading(true)
     try {
-      const response = await axios.post('https://salonsys.000webhostapp.com/backend/api/login.php', params, requestData)
+      const response = await axios.post(`${API_BASE_URL}/backend/api/login.php`, params, requestData)
       const data = await response.data
       if (data[0] == 'Success') {
         window.localStorage.setItem('username', username)
@@ -48,18 +48,6 @@ export const AuthContextProvider = ({ children }) => {
       setIsLoading(false)
     }
   }
-
-  // useEffect(() => {
-  //   const clearLocalStorage = () => {
-  //     localStorage.clear()
-  //   }
-
-  //   window.addEventListener('beforeunload', clearLocalStorage)
-
-  //   return () => {
-  //     window.addEventListener('beforeunload', clearLocalStorage)
-  //   }
-  // }, [])
 
   const values = { isLogin, login, role, setIsLogin, isLoading }
 

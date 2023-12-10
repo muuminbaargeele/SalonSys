@@ -18,6 +18,7 @@ import EyeOutline from 'mdi-material-ui/EyeOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const TabSecurity = () => {
   // ** States
@@ -89,11 +90,7 @@ const TabSecurity = () => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_pass.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/update_pass.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useState } from 'react'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const FetchOverviewTableData = () => {
   const [rowsData, setRowsData] = useState([])
@@ -17,11 +18,7 @@ const FetchOverviewTableData = () => {
     params.append('Username', currentLoggedUser)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/get_dashtable.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/get_dashtable.php`, params, requestData)
       const data = await response.data
 
       if (data) {

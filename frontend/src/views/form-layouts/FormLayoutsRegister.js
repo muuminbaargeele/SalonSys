@@ -30,6 +30,7 @@ import axios from 'axios'
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import { useEffect } from 'react'
 import { getCurrentDate } from 'src/utils/GetCurrentDate'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const FormLayoutsSeparator = () => {
   const [currentUrl, SetCurrentUrl] = useState('')
@@ -115,11 +116,7 @@ const FormLayoutsSeparator = () => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/register.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/register.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)

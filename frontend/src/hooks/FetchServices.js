@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useState } from 'react'
 import { useEffect } from 'react'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const FetchServicesData = () => {
   const [services, setServices] = useState([])
@@ -16,11 +17,7 @@ const FetchServicesData = () => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/get_services.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/get_services.php`, params, requestData)
       const data = await response.data
       if (data) {
         setServices(data)
@@ -42,11 +39,7 @@ const FetchServicesData = () => {
       }
 
       try {
-        const response = await axios.post(
-          'https://salonsys.000webhostapp.com/backend/api/get_services.php',
-          params,
-          requestData
-        )
+        const response = await axios.post(`${API_BASE_URL}/backend/api/get_services.php`, params, requestData)
         const data = await response.data
         if (data) {
           setServices(data)

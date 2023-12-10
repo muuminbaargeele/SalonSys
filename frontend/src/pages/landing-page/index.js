@@ -29,6 +29,7 @@ import axios from 'axios'
 import { TextField } from '@mui/material'
 import toast from 'react-hot-toast'
 import { getCurrentDate } from 'src/utils/GetCurrentDate'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const LandingPage = () => {
   const router = useRouter()
@@ -38,8 +39,7 @@ const LandingPage = () => {
   const [services, setServices] = useState([])
   const [salonName, setSalonName] = useState('')
   const [serviceID, setServiceID] = useState('')
-  const [selectedTitle, setSelectedTitle] = useState('')
-  const [selectedSubtitle, setSelectedSubtitle] = useState('')
+  const [selectedServive, setSelectedServive] = useState('')
   const [phone, setPhone] = useState('')
   const [name, setName] = useState('')
 
@@ -57,13 +57,8 @@ const LandingPage = () => {
 
       setIsloading(true)
       try {
-        const response = await axios.post(
-          'https://salonsys.000webhostapp.com/backend/api/get_saloninfo.php',
-          params,
-          requestData
-        )
+        const response = await axios.post(`${API_BASE_URL}/backend/api/get_saloninfo.php`, params, requestData)
         const data = await response.data
-        console.log(data)
 
         setServices(data)
         if (data.length > 0 && data[0].SalonName) {
@@ -83,7 +78,10 @@ const LandingPage = () => {
   const makeAppointMent = async event => {
     event.preventDefault()
 
-    if (!selectedTitle || !selectedSubtitle || !phone || !name) return toast.error('Please fill all inputfields.')
+    const [title, subTitle, price] = selectedServive.split(',').map(item => item.trim())
+    const priceAsNumber = price.replace(/\$/g, '')
+
+    if (!title || !subTitle || !priceAsNumber || !phone || !name) return toast.error('Please fill all inputfields.')
 
     const requestData = {
       method: 'POST',
@@ -97,18 +95,18 @@ const LandingPage = () => {
     params.append('CustomerPhone', phone)
     params.append('CreateDT', currentDate)
     params.append('ServiceID', serviceID)
-    params.append('selectedTitle', selectedTitle)
-    params.append('selectedSubtitle', selectedSubtitle)
+    params.append('selectedTitle', title)
+    params.append('selectedSubtitle', subTitle)
+    params.append('Price', priceAsNumber)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/booking.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/booking.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(`Booked ${data}fully.`)
+        setName('')
+        setPhone('')
+        setSelectedServive('')
       }
     } catch (error) {
       console.log(error)
@@ -161,34 +159,17 @@ const LandingPage = () => {
                     label='Title'
                     id={`form-layouts-separator-select`}
                     labelId={`form-layouts-separator-select-label`}
-                    value={selectedTitle}
-                    onChange={event => setSelectedTitle(event.target.value)}
+                    value={selectedServive}
+                    onChange={event => setSelectedServive(event.target.value)}
                   >
                     {Array.isArray(services) &&
                       services.length > 0 &&
                       services.map((item, index) => (
-                        <MenuItem key={item.serviceId || index} value={item.Title}>
-                          {item.Title}
-                        </MenuItem>
-                      ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth>
-                  <InputLabel id={`form-layouts-separator-select-labe`}>SubTitle</InputLabel>
-                  <Select
-                    label='SubTitle'
-                    id={`form-layouts-separator-select`}
-                    labelId={`form-layouts-separator-select-label`}
-                    value={selectedSubtitle}
-                    onChange={event => setSelectedSubtitle(event.target.value)}
-                  >
-                    {Array.isArray(services) &&
-                      services.length > 0 &&
-                      services.map((item, index) => (
-                        <MenuItem key={item.serviceId || index} value={item.SubTitle}>
-                          {item.SubTitle}
+                        <MenuItem
+                          key={item.serviceId || index}
+                          value={`${item.Title}, ${item.SubTitle}, $${item.Price}`}
+                        >
+                          {` ${item.Title}, ${item.SubTitle}, $${item.Price}`}
                         </MenuItem>
                       ))}
                   </Select>

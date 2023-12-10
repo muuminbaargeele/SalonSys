@@ -36,6 +36,7 @@ import Modal from 'react-modal'
 import FetchServicesData from 'src/hooks/FetchServices'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const customStyles = {
   content: {
@@ -165,11 +166,7 @@ const ManageTable = props => {
     params.append('Price', selectedService.ServicePrice)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_services.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/update_services.php`, params, requestData)
       const data = await response.data
       if (data) {
         fetchServicesData()
@@ -205,11 +202,7 @@ const ManageTable = props => {
     params.append('ServiceId', id)
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/delete_service.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/delete_service.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)

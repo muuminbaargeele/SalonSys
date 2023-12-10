@@ -69,7 +69,11 @@ const UserDropdown = () => {
   const logout = () => {
     localStorage.clear()
     setIsLogin(false)
-    router.push('/login')
+    if (values.role == 'MainAdmin') {
+      router.push('/login')
+    } else {
+      router.push('/login?id=29')
+    }
   }
 
   return (

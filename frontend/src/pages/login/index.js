@@ -30,6 +30,7 @@ import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
 import { useAuth } from 'src/context/AuthContext'
 import axios from 'axios'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 // ** Styled Components
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -75,7 +76,7 @@ const LoginPage = () => {
     if (isLogin) {
       router.push('/')
 
-      return null;
+      return null
     }
   }, [router, isLogin])
 
@@ -93,11 +94,7 @@ const LoginPage = () => {
 
       setIsloadingLoggedUser(true)
       try {
-        const response = await axios.post(
-          'https://salonsys.000webhostapp.com/backend/api/get_saloninfo.php',
-          params,
-          requestData
-        )
+        const response = await axios.post(`${API_BASE_URL}/backend/api/get_saloninfo.php`, params, requestData)
         const data = await response.data
         if (data.length > 0 && data[0].SalonName) {
           setLoggedName(data[0].SalonName)

@@ -25,7 +25,9 @@ import {
   Divider,
   InputAdornment,
   InputLabel,
-  TextField, IconButton, Menu
+  TextField,
+  IconButton,
+  Menu
 } from '@mui/material'
 import Magnify from 'mdi-material-ui/Magnify'
 import { useEffect, useState } from 'react'
@@ -36,6 +38,7 @@ import DateTimePicker from 'react-datetime-picker'
 import 'react-datetime-picker/dist/DateTimePicker.css'
 import 'react-calendar/dist/Calendar.css'
 import 'react-clock/dist/Clock.css'
+import { API_BASE_URL } from 'src/lib/apiConfig'
 
 const DashboardTable = props => {
   const { hidden, hiddenSm } = props
@@ -61,11 +64,7 @@ const DashboardTable = props => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/update_requests.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/update_requests.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)
@@ -151,11 +150,7 @@ const DashboardTable = props => {
     }
 
     try {
-      const response = await axios.post(
-        'https://salonsys.000webhostapp.com/backend/api/set_arrivaltime.php',
-        params,
-        requestData
-      )
+      const response = await axios.post(`${API_BASE_URL}/backend/api/set_arrivaltime.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         fetchOverviewTable()
