@@ -91,18 +91,27 @@ const DashboardTable = props => {
     }))
   }
 
-  const refreshData = () => {
-    setTimeout(() => {
-      fetchOverviewTable()
-      console.log('ok')
-    }, 3000)
-  }
+
 
   useEffect(() => {
-    fetchOverviewTable()
+    // Function to fetch data and update state
+    const fetchData = async () => {
+      try {
+        await fetchOverviewTable();
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-    // refreshData()
-  }, [])
+    // Initial fetch
+    fetchData();
+
+    // Set up interval to fetch data every 3 seconds
+    const intervalId = setInterval(fetchData, 3000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleSearch = event => {
     const searchValue = event.target.value
