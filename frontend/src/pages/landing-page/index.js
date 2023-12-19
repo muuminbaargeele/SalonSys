@@ -23,8 +23,8 @@ import CardContent from '@mui/material/CardContent'
 import CardActions from '@mui/material/CardActions'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
+import CardMedia from '@mui/material/CardMedia'
 
-import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import axios from 'axios'
 import { TextField } from '@mui/material'
 import toast from 'react-hot-toast'
@@ -121,6 +121,11 @@ const LandingPage = () => {
           titleTypographyProps={{ variant: 'h6', color: 'primary' }}
         />
       </Card>
+
+      {/* popular services */}
+      <PopularServices />
+      {/* popular services */}
+
       <Card sx={{ marginTop: 5 }}>
         <CardHeader title='Make appointment now' titleTypographyProps={{ variant: 'h6' }} />
         <Divider sx={{ margin: 0 }} />
@@ -154,9 +159,9 @@ const LandingPage = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
-                  <InputLabel id={`form-layouts-separator-select-labe`}>Title</InputLabel>
+                  <InputLabel id={`form-layouts-separator-select-labe`}>Services</InputLabel>
                   <Select
-                    label='Title'
+                    label='Services'
                     id={`form-layouts-separator-select`}
                     labelId={`form-layouts-separator-select-label`}
                     value={selectedServive}
@@ -189,11 +194,68 @@ const LandingPage = () => {
           </CardActions>
         </form>
       </Card>
-
-      <FooterIllustrationsV1 />
     </Box>
   )
 }
 LandingPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
 
 export default LandingPage
+
+const PopularServices = () => {
+  return (
+    <Card>
+      <CardHeader title='Popular Services' titleTypographyProps={{ variant: 'h6' }} />
+      <Divider sx={{ margin: 0 }} />
+      <Grid container spacing={5} sx={{ paddingLeft: 3, paddingRight: 3 }}>
+        <Grid item xs={12} sm={6}>
+          <Card>
+            <CardMedia
+              sx={{ height: '14.5625rem', objectFit: 'cover' }}
+              image='https://images.unsplash.com/photo-1604654894610-df63bc536371?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            />
+            <CardContent>
+              <Box sx={{ maxHeight: 200, overflow: 'hidden' }}>
+                <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                  Nails
+                </Typography>
+                <Typography variant='body2'>Nails done</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Card>
+            <CardMedia
+              sx={{ height: '14.5625rem', objectFit: 'cover' }}
+              image='https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            />
+            <CardContent>
+              <Box sx={{ maxHeight: 200, overflow: 'hidden' }}>
+                <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                  Skincare
+                </Typography>
+                <Typography variant='body2'>Skincare</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Card>
+            <CardMedia
+              sx={{ height: '14.5625rem', objectFit: 'cover' }}
+              image='https://images.unsplash.com/photo-1560869713-7d0a29430803?q=80&w=1526&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            />
+            <CardContent>
+              <Box sx={{ maxHeight: 200, overflow: 'hidden' }}>
+                <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                  Haircare
+                </Typography>
+                <Typography variant='body2'>Haircare</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Card>
+  )
+}
