@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // ** Next Import
 import { useRouter } from 'next/router'
@@ -28,19 +28,48 @@ const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
   height: 120,
   marginRight: theme.spacing(6.25),
-  borderRadius: theme.shape.borderRadius
+  borderRadius: theme.shape.borderRadius,
+  objectFit: 'cover'
+}))
+
+const ButtonStyled = styled(Button)(({ theme }) => ({
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+    textAlign: 'center'
+  }
 }))
 
 const TabAccount = () => {
-  // ** State
-  const [imgSrc, setImgSrc] = useState('/images/avatars/1.png')
+  const { values, setValues, isLoading, fetchLoggedUser } = FetchLoggedUserInfo()
 
-  const { values, setValues, isLoading } = FetchLoggedUserInfo()
+  // ** State
+  const [imgSrc, setImgSrc] = useState(values.SalonImage ? values.SalonImage : '/images/avatars/1.png')
+
+  useEffect(() => {
+    if (values.SalonImage) {
+      setImgSrc(values.SalonImage)
+    } else {
+      setImgSrc('/images/avatars/1.png')
+    }
+  }, [values.SalonImage])
 
   const { setIsLogin } = useAuth()
 
   // ** Hooks
   const router = useRouter()
+
+  const onChange = file => {
+    const reader = new FileReader()
+    const { files } = file.target
+
+    if (files && files.length !== 0) {
+      reader.onload = () => {
+        setImgSrc(reader.result)
+        uploadImage()
+      }
+      reader.readAsDataURL(files[0])
+    }
+  }
 
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
@@ -101,13 +130,41 @@ const TabAccount = () => {
     }
   }
 
+  const uploadImage = async () => {
+    const formData = new FormData()
+    const fileInput = document.getElementById('account-settings-upload-image')
+
+    if (fileInput.files.length > 0) {
+      formData.append('image', fileInput.files[0])
+      formData.append('Username', values.username)
+      console.log(fileInput.files[0])
+    }
+
+    const requestData = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/backend/api/upload_logo_img.php`, formData, requestData)
+      if (response) {
+        fetchLoggedUser()
+        toast.success('Uploaded successfully')
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   return (
     <CardContent>
       <form onSubmit={updateLoggedUserInfo}>
         <Grid container spacing={7}>
           <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <ImgStyled src={imgSrc} alt='Profile Pic' />
+              <ImgStyled src='/images/avatars/1.png' alt='Profile Pic' />
             </Box>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -171,6 +228,35 @@ const TabAccount = () => {
                   Salon Info
                 </Typography>
               </Grid>
+
+              {/* For upload image  */}
+              <Grid item xs={12} sx={{ marginTop: 4.8, marginBottom: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ImgStyled
+                    src={imgSrc}
+                    alt='image'
+                    onError={() => {
+                      setImgSrc('/images/avatars/1.png')
+                    }}
+                  />
+                  <Box>
+                    <ButtonStyled component='label' variant='contained' htmlFor='account-settings-upload-image'>
+                      Upload New Photo
+                      <input
+                        hidden
+                        type='file'
+                        onChange={onChange}
+                        accept='image/png, image/jpeg'
+                        id='account-settings-upload-image'
+                      />
+                    </ButtonStyled>
+                    <Typography variant='body2' sx={{ marginTop: 5 }}>
+                      Allowed PNG or JPEG. Max size of 800K.
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+              {/* For upload image */}
 
               <Grid item xs={12} sm={6}>
                 <TextField

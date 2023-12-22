@@ -25,34 +25,51 @@ const FormLayoutsSeparator = () => {
     Price: ''
   })
 
+  const [imgSrc, setImgSrc] = useState('')
+
   // Handle Change
   const handleChange = prop => event => {
     setValues({ ...values, [prop]: event.target.value })
   }
 
+  // for service image
+  const onChange = file => {
+    const reader = new FileReader()
+    const { files } = file.target
+
+    if (files && files.length !== 0) {
+      reader.onload = () => {
+        setImgSrc(reader.result)
+      }
+      reader.readAsDataURL(files[0])
+    }
+  }
+
   const handleAddService = async event => {
     event.preventDefault()
 
-    if (!values.Title || !values.SubTitle || !values.Price) return toast.error('Fill all inputfields.')
+    const formData = new FormData()
+    let fileInput = document.getElementById('account-settings-upload-image')
+    if (fileInput.files.length > 0) {
+      formData.append('image', fileInput.files[0])
+      console.log(fileInput.files[0])
+    }
+
+    if (!values.Title || !values.SubTitle || !values.Price || !formData) return toast.error('Fill all inputfields.')
 
     const currUsername = window.localStorage.getItem('username')
     const currentDate = getCurrentDate()
 
-    const params = new URLSearchParams()
-    params.append('Username', currUsername)
-    params.append('Title', values.Title)
-    params.append('SubTitle', values.SubTitle)
-    params.append('Price', values.Price)
-    params.append('CreateDT', currentDate)
-
-    const requestData = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }
+    formData.append('Username', currUsername)
+    formData.append('Title', values.Title)
+    formData.append('SubTitle', values.SubTitle)
+    formData.append('Price', values.Price)
+    formData.append('CreateDT', currentDate)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/upload_service.php`, params, requestData)
+      const response = await axios.post(`${API_BASE_URL}/backend/api/upload_service.php`, formData)
       const data = await response.data
+      console.log(data)
       if (data == 'Success') {
         toast.success(data)
         setValues({
@@ -60,6 +77,7 @@ const FormLayoutsSeparator = () => {
           SubTitle: '',
           Price: ''
         })
+        fileInput.value = ''
       } else {
         toast.error(data)
       }
@@ -101,6 +119,15 @@ const FormLayoutsSeparator = () => {
                 type='Number'
                 value={values.Price}
                 onChange={handleChange('Price')}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type='file'
+                onChange={onChange}
+                accept='image/png, image/jpeg'
+                id='account-settings-upload-image'
               />
             </Grid>
           </Grid>
