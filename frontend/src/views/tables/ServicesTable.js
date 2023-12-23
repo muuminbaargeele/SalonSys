@@ -99,10 +99,10 @@ const theme = createTheme({
 
 let columns = [
   { id: 'serviceId', label: '#', minWidth: 50 },
-  { id: 'Title', label: 'Title', minWidth: 100 },
+  { id: 'Title', label: 'Category', minWidth: 100 },
   {
     id: 'SubTitle',
-    label: 'Sub Title',
+    label: 'Service',
     minWidth: 100
   },
   { id: 'actions4', label: 'Service Image', minWidth: 100 },

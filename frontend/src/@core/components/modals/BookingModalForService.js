@@ -97,7 +97,7 @@ const BookingModalForService = ({
                   <TextField
                     fullWidth
                     type='text'
-                    label='Service name'
+                    label='Category'
                     value={selectedService.ServiceTitle}
                     style={{ pointerEvents: 'none' }}
                   />
@@ -106,7 +106,7 @@ const BookingModalForService = ({
                   <TextField
                     fullWidth
                     type='text'
-                    label='Service description'
+                    label='Service'
                     value={selectedService.ServiceSubTitle}
                     style={{ pointerEvents: 'none' }}
                   />
