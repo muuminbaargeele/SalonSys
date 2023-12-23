@@ -115,13 +115,16 @@ LandingPage.getLayout = page => <BlankLayout>{page}</BlankLayout>
 export default LandingPage
 
 const OurServices = ({ services }) => {
+
   const [isOpen, setIsOpen] = useState(false)
+
   const [selectedService, setSelectedService] = useState({
     ServiceID: '',
     ServiceTitle: '',
     ServiceSubTitle: '',
     ServicePrice: ''
   })
+  
   const [customerInfo, setCustomerInfo] = useState({
     customerName: '',
     customerPhone: ''

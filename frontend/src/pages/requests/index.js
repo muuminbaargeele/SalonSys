@@ -101,6 +101,7 @@ const DashboardTable = props => {
 
   const openImageModal = img => {
     setIsServiceImageModal(true)
+    
     const image =
       img !== '' ? `${API_BASE_URL}/backend/service_images/${img}` : '/images/avatars/default.jpeg'
     setImgSrc(image)
