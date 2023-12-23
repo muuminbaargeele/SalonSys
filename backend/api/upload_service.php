@@ -6,6 +6,7 @@ $Title = $_POST['Title'];
 $SubTitle = $_POST['SubTitle'];
 $Price = $_POST['Price'];
 $CreateDT = $_POST['CreateDT'];
+$targetDirectory = '../service_images/'; // Replace with your desired directory
 
 
 
@@ -29,8 +30,19 @@ if (mysqli_num_rows($email_check) > 0) {
         if ($SubTitle == $fetch_SubTitle) {
             echo json_encode("SubTitle Alredy Exits");
         } else {
-            $upload_Service = mysqli_query($conn, "INSERT INTO `Services`(`Title`, `SubTitle`, `CreateDT`, `Price`, `SalonID`) VALUES ('$Title','$SubTitle','$CreateDT','$Price','$fetch_SalonID')");
-            echo json_encode("Success");
+            if (!empty($_FILES['image']['name'])) {
+                $targetFile = $targetDirectory . basename($_FILES['image']['name']);
+                $imageName = basename($_FILES['image']['name']); // Get the basename of the file
+
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+            $upload_Service = mysqli_query($conn, "INSERT INTO `Services`(`Title`, `SubTitle`, `CreateDT`, `ServiceImage`, `Price`, `SalonID`) VALUES ('$Title','$SubTitle','$CreateDT','$imageName','$Price','$fetch_SalonID')");
+                    echo json_encode("Success");
+                } else {
+                    echo 'Failed to upload file.';
+                }
+            } else {
+                echo 'No file selected.';
+            }
         }
 
     } else {

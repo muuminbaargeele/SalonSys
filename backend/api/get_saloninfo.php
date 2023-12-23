@@ -11,33 +11,42 @@ if (isset($_POST['SalonID'])) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $get_Services = mysqli_query($conn, "SELECT s.SalonName, s.SalonImage, se.serviceId, se.Title, se.SubTitle, se.Price, se.ServiceImage 
-                                         FROM `Services` se
-                                         JOIN `Salons` s ON se.SalonID = s.SalonID
-                                         WHERE s.SalonID = '$SalonID'");
+    $checkSalon = mysqli_query($conn, "SELECT * FROM `Salons` WHERE SalonID = '$SalonID'");
 
-    $rows = array();
+    if (mysqli_num_rows($checkSalon) > 0) {
+        $get_Services = mysqli_query($conn, "SELECT s.SalonName, s.SalonImage, se.serviceId, se.Title, se.SubTitle, se.Price, se.ServiceImage 
+        FROM `Services` se
+        JOIN `Salons` s ON se.SalonID = s.SalonID
+        WHERE s.SalonID = '$SalonID'");
 
-    if ($get_Services) {
-        if (mysqli_num_rows($get_Services) > 0) {
-            while ($fetch_Services = mysqli_fetch_assoc($get_Services)) {
-                $rows[] = $fetch_Services;
+        $rows = array();
+
+        if ($get_Services) {
+            if (mysqli_num_rows($get_Services) > 0) {
+                while ($fetch_Services = mysqli_fetch_assoc($get_Services)) {
+                    $rows[] = $fetch_Services;
+                }
+            } else {
+                // If no services found, fetch salon name
+                $get_Salon = mysqli_query($conn, "SELECT SalonName, SalonImage FROM `Salons` WHERE SalonID = '$SalonID'");
+
+                if ($get_Salon) {
+                    $rows[] = mysqli_fetch_assoc($get_Salon);
+                } else {
+                    // Handle the case where fetching salon name fails
+                    $rows[] = array('error' => 'Unable to fetch salon details');
+                }
             }
         } else {
-            // If no services found, fetch salon name
-            $get_Salon = mysqli_query($conn, "SELECT SalonName FROM `Salons` WHERE SalonID = '$SalonID'");
-
-            if ($get_Salon) {
-                $rows[] = mysqli_fetch_assoc($get_Salon);
-            } else {
-                // Handle the case where fetching salon name fails
-                $rows[] = array('error' => 'Unable to fetch salon details');
-            }
+            // Handle the case where fetching services fails
+            $rows[] = array('error' => 'Unable to fetch services');
         }
     } else {
-        // Handle the case where fetching services fails
-        $rows[] = array('error' => 'Unable to fetch services');
+        $rows[] = array("Salon Not Found");
     }
+
+
+
 
     echo json_encode($rows);
 

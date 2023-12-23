@@ -30,7 +30,7 @@ if (mysqli_num_rows($get_admin) > 0) {
             }
         }
     } else {
-        $get_SalonUser = mysqli_query($conn, "SELECT r.ReqId, c.CustomerName, c.CustomerPhone, se.Title, se.SubTitle, se.Price, r.QueNO, r.ArrivalTime, r.Status FROM `Requests` as r JOIN `Customers` as c JOIN `Services` as se JOIN `Salons` as s JOIN Admins as a WHERE r.CusID = c.CusID AND r.ServiceID = se.serviceId AND s.SalonID = se.SalonID AND s.SalonID = a.SalonID AND a.SalonID = '$SalonID' AND a.Username = '$Username'");
+        $get_SalonUser = mysqli_query($conn, "SELECT r.ReqId, c.CustomerName, c.CustomerPhone, se.Title, se.SubTitle, se.Price, se.ServiceImage, r.QueNO, r.ArrivalTime, r.Status FROM `Requests` as r JOIN `Customers` as c JOIN `Services` as se JOIN `Salons` as s JOIN Admins as a WHERE r.CusID = c.CusID AND r.ServiceID = se.serviceId AND s.SalonID = se.SalonID AND s.SalonID = a.SalonID AND a.SalonID = '$SalonID' AND a.Username = '$Username'");
         while ($fetch = mysqli_fetch_assoc($get_SalonUser)) {
             $rows[] = $fetch;
         }

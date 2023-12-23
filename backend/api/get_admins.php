@@ -24,7 +24,7 @@ if ($get_admin) {
             $rows[] = $fetch_SalanAdmin;
         }
     } else {
-        $get_SalonAdmin = mysqli_query($conn, "SELECT a.AdID, a.Name, a.Username, a.Phone, a.CreateDT, a.Shift, a.Role, s.SalonName, s.Address, CustomerLink FROM `Admins` a JOIN `Salons` s WHERE a.SalonID = s.SalonID AND a.Username = '$Username'");
+        $get_SalonAdmin = mysqli_query($conn, "SELECT a.AdID, a.Name, a.Username, a.Phone, a.CreateDT, a.Shift, a.Role, s.SalonName, s.Address, s.CustomerLink, s.SalonImage FROM `Admins` a JOIN `Salons` s WHERE a.SalonID = s.SalonID AND a.Username = '$Username'");
         $fetch_SalanAdmin = mysqli_fetch_assoc($get_SalonAdmin);
         if ($get_SalonAdmin) {
             $rows[] = $fetch_SalanAdmin;

@@ -15,7 +15,7 @@ if (mysqli_num_rows($get_admin) > 0) {
     $role = $fetch_admin['Role'];
     if ($role == 'MainAdmin') {
         $admin_overView = mysqli_multi_query($conn, "
-        SELECT COUNT(SalonID) as TotalSalons, SUM(Amount) as TotalAmount FROM `Salons`;
+        SELECT COUNT(SalonID) as TotalSalons, COALESCE(SUM(Amount),0) as TotalAmount FROM `Salons`;
         SELECT COUNT(SalonID) as RecentSalons FROM `Salons`WHERE CreateDT BETWEEN DATE_SUB(LAST_DAY(CURDATE()), INTERVAL 1 MONTH) + INTERVAL 1 DAY AND LAST_DAY(CURDATE());
         SELECT COUNT(SalonID) as ActiveSalons FROM `Salons` WHERE Status = 1; 
         SELECT COUNT(SalonID) as inActiveSalons FROM `Salons` WHERE Status = 0;
@@ -46,7 +46,7 @@ if (mysqli_num_rows($get_admin) > 0) {
         COUNT(CASE WHEN r.Status = 0 THEN 1 ELSE NULL END) AS Pending,
         COUNT(DISTINCT CASE WHEN c.CreateDT BETWEEN DATE_SUB(LAST_DAY(CURDATE()), INTERVAL 1 MONTH) + INTERVAL 1 DAY AND LAST_DAY(CURDATE()) THEN c.CusID ELSE NULL END) AS RecentCustomers,
         COALESCE(SUM(IFNULL(CASE WHEN r.Status = 2 THEN se.Price ELSE 0 END, 0)), 0) AS TotalPrice,
-        COUNT(se.serviceId) AS Services
+        COUNT(DISTINCT se.serviceId) AS Services
     FROM 
         `Customers` AS c
     JOIN 
