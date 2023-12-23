@@ -11,7 +11,7 @@ if (isset($_POST['SalonID'])) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $get_Services = mysqli_query($conn, "SELECT s.SalonName, se.serviceId, se.Title, se.SubTitle, se.Price 
+    $get_Services = mysqli_query($conn, "SELECT s.SalonName, s.SalonImage, se.serviceId, se.Title, se.SubTitle, se.Price, se.ServiceImage 
                                          FROM `Services` se
                                          JOIN `Salons` s ON se.SalonID = s.SalonID
                                          WHERE s.SalonID = '$SalonID'");

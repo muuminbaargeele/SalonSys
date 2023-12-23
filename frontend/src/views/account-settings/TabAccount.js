@@ -43,13 +43,13 @@ const TabAccount = () => {
   const { values, setValues, isLoading, fetchLoggedUser } = FetchLoggedUserInfo()
 
   // ** State
-  const [imgSrc, setImgSrc] = useState(values.SalonImage ? values.SalonImage : '/images/avatars/1.png')
+  const [imgSrc, setImgSrc] = useState(values.SalonImage ? values.SalonImage : '/images/avatars/default.jpg')
 
   useEffect(() => {
     if (values.SalonImage) {
       setImgSrc(values.SalonImage)
     } else {
-      setImgSrc('/images/avatars/1.png')
+      setImgSrc('/images/avatars/default.jpg')
     }
   }, [values.SalonImage])
 
@@ -236,7 +236,7 @@ const TabAccount = () => {
                     src={imgSrc}
                     alt='image'
                     onError={() => {
-                      setImgSrc('/images/avatars/1.png')
+                      setImgSrc('/images/avatars/default.jpg')
                     }}
                   />
                   <Box>

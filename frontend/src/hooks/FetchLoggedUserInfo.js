@@ -32,7 +32,7 @@ const FetchLoggedUserInfo = () => {
       const data = await response.data[0]
 
       const salonImage =
-        data.SalonImage !== '' ? `${API_BASE_URL}/backend/logo_images/${data.SalonImage}` : '/images/avatars/1.png'
+        data.SalonImage !== '' ? `${API_BASE_URL}/backend/logo_images/${data.SalonImage}` : '/images/avatars/default.jpg'
 
       setValues({
         name: data.Name || '',

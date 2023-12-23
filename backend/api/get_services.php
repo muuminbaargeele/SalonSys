@@ -18,7 +18,7 @@ if (mysqli_num_rows($get_admin) > 0) {
         $role = $fetch['Role'];
         if ($role != 'MainAdmin') {
             $SalonID = $fetch['SalonID'];
-            $get_Services = mysqli_query($conn, "SELECT se.serviceId, se.Title, se.SubTitle, se.CreateDT, se.Price FROM `Services` se JOIN `Salons` s ON se.SalonID = s.SalonID WHERE s.SalonID = '$SalonID'");
+            $get_Services = mysqli_query($conn, "SELECT se.serviceId, se.Title, se.SubTitle, se.CreateDT, se.ServiceImage, se.Price FROM `Services` se JOIN `Salons` s ON se.SalonID = s.SalonID WHERE s.SalonID = '$SalonID'");
             while ($fetch_Services = mysqli_fetch_assoc($get_Services)) {
                 $rows[] = $fetch_Services;
             }

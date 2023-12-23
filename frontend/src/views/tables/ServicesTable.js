@@ -12,10 +12,12 @@ import TableContainer from '@mui/material/TableContainer'
 import TablePagination from '@mui/material/TablePagination'
 import CardHeader from '@mui/material/CardHeader'
 import Divider from '@mui/material/Divider'
+import { styled } from '@mui/material/styles'
 
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
 import AccountEdit from 'mdi-material-ui/AccountEdit'
+import ImageSearch from 'mdi-material-ui/ImageSearch'
 import {
   Box,
   CardActions,
@@ -38,6 +40,16 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import { API_BASE_URL } from 'src/lib/apiConfig'
 
+// ** Icons Imports
+
+const ImgStyled = styled('img')(({ theme }) => ({
+  width: 500,
+  height: 500,
+  marginRight: theme.spacing(6.25),
+  borderRadius: theme.shape.borderRadius,
+  objectFit: 'cover'
+}))
+
 const customStyles = {
   content: {
     top: '50%',
@@ -49,6 +61,23 @@ const customStyles = {
     zIndex: 9999999999,
     width: '90%',
     maxWidth: '1000px'
+  },
+  overlay: {
+    zIndex: 9999999998,
+    backgroundColor: `rgb(0 0 0 / 0.25)`
+  }
+}
+const customStyles2 = {
+  content: {
+    backgroundColor: 'transparent',
+    border: 0,
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    zIndex: 9999999999,
   },
   overlay: {
     zIndex: 9999999998,
@@ -76,6 +105,7 @@ let columns = [
     label: 'Sub Title',
     minWidth: 100
   },
+  { id: 'actions4', label: 'Service Image', minWidth: 100 },
   {
     id: 'CreateDT',
     label: 'Create Date',
@@ -94,9 +124,11 @@ const ManageTable = props => {
   const { hidden, toggleNavVisibility } = props
 
   // ** States
+  const [imgSrc, setImgSrc] = useState('/images/avatars/default.jpeg')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [isServiceModalOpen, setIsServiceModal] = useState(false)
+  const [isServiceImageModalOpen, setIsServiceImageModal] = useState(false)
   const [selectedService, setSelectedService] = useState({
     ServiceID: '',
     ServiceTitle: '',
@@ -112,6 +144,7 @@ const ManageTable = props => {
 
   const closeModal = () => {
     setIsServiceModal(false)
+    setIsServiceImageModal(false)
   }
 
   const openModal = id => {
@@ -125,6 +158,13 @@ const ManageTable = props => {
       ServiceCreateDT: findSelectedService.CreateDT,
       ServicePrice: findSelectedService.Price
     })
+  }
+  const openImageModal = id => {
+    setIsServiceImageModal(true)
+    const findSelectedService = services.find(service => service.serviceId == id)
+    const image =
+      findSelectedService.ServiceImage !== '' ? `${API_BASE_URL}/backend/service_images/${findSelectedService.ServiceImage}` : '/images/avatars/default.jpeg'
+    setImgSrc(image)
   }
 
   useEffect(() => {
@@ -295,7 +335,10 @@ const ManageTable = props => {
                             <AccountEdit sx={{ cursor: 'pointer' }} size={3} onClick={() => openModal(row.serviceId)} />
                           </>
                         ) : (
-                          value
+                          (column.id === 'actions4') ? <>
+                            {value}
+                            <ImageSearch sx={{ cursor: 'pointer', justifyContent: 'center', width: 100 }} size={3} onClick={() => openImageModal(row.serviceId)} />
+                          </> : value
                         )}
                       </TableCell>
                     )
@@ -389,6 +432,26 @@ const ManageTable = props => {
         </Modal>
       </ThemeProvider>
       {/* Service manage modal */}
+      {/* Service image modal */}
+      <ThemeProvider theme={theme}>
+        <Modal
+          isOpen={isServiceImageModalOpen}
+          onRequestClose={closeModal}
+          style={customStyles2}
+          contentLabel='servive Modal'
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <ImgStyled
+              src={imgSrc}
+              alt='image'
+              onError={() => {
+                setImgSrc('/images/avatars/default.jpg')
+              }}
+            />
+          </Box>
+        </Modal>
+      </ThemeProvider>
+      {/* Service image modal */}
     </Paper>
   )
 }
