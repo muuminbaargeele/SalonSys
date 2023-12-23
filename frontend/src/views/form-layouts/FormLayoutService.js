@@ -96,8 +96,8 @@ const FormLayoutsSeparator = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label='Title'
-                placeholder='Title'
+                label='Category'
+                placeholder='Category'
                 value={values.Title}
                 onChange={handleChange('Title')}
               />
@@ -105,8 +105,8 @@ const FormLayoutsSeparator = () => {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
-                label='SubTitle'
-                placeholder='SubTitle'
+                label='Service'
+                placeholder='Service'
                 value={values.SubTitle}
                 onChange={handleChange('SubTitle')}
               />

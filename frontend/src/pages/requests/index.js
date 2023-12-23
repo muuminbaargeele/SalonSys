@@ -13,7 +13,10 @@ import TableHead from '@mui/material/TableHead'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import Typography from '@mui/material/Typography'
+import ImageSearch from 'mdi-material-ui/ImageSearch'
 import TableContainer from '@mui/material/TableContainer'
+import { styled } from '@mui/material/styles'
+import Modal from 'react-modal'
 import {
   Button,
   CardActions,
@@ -25,6 +28,8 @@ import {
   Divider,
   InputAdornment,
   InputLabel,
+  createTheme,
+  ThemeProvider,
   TextField,
   IconButton,
   Menu
@@ -40,6 +45,44 @@ import 'react-calendar/dist/Calendar.css'
 import 'react-clock/dist/Clock.css'
 import { API_BASE_URL } from 'src/lib/apiConfig'
 
+const ImgStyled = styled('img')(({ theme }) => ({
+  width: 500,
+  height: 500,
+  marginRight: theme.spacing(6.25),
+  borderRadius: theme.shape.borderRadius,
+  objectFit: 'cover'
+}))
+
+const customStyles2 = {
+  content: {
+    backgroundColor: 'transparent',
+    border: 0,
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    zIndex: 9999999999,
+  },
+  overlay: {
+    zIndex: 9999999998,
+    backgroundColor: `rgb(0 0 0 / 0.25)`
+  }
+}
+
+const primaryColor = '#1976D2'
+const lightModeColor = primaryColor
+
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: lightModeColor
+    }
+  }
+})
+
 const DashboardTable = props => {
   const { hidden, hiddenSm } = props
 
@@ -47,8 +90,21 @@ const DashboardTable = props => {
   const [actionValues, setActionValues] = useState({})
 
   const [selectedRow, setSelectedRow] = useState(null)
+  const [imgSrc, setImgSrc] = useState('/images/avatars/default.jpeg')
+  const [isServiceImageModalOpen, setIsServiceImageModal] = useState(false)
 
   const { fetchOverviewTable, rowsData, setRowsData } = FetchOverviewTableData()
+
+  const closeModal = () => {
+    setIsServiceImageModal(false)
+  }
+
+  const openImageModal = img => {
+    setIsServiceImageModal(true)
+    const image =
+      img !== '' ? `${API_BASE_URL}/backend/service_images/${img}` : '/images/avatars/default.jpeg'
+    setImgSrc(image)
+  }
 
   const updateRequest = async (reqid, status) => {
     const currUsername = window.localStorage.getItem('username')
@@ -172,145 +228,170 @@ const DashboardTable = props => {
   }
 
   return (
-    <Card>
-      <CardActions sx={{ height: 60 }}>
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}
-        >
-          <CardHeader title='Requests' titleTypographyProps={{ variant: 'h6' }} />
+    <>
+      <Card>
+        <CardActions sx={{ height: 60 }}>
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
+          >
+            <CardHeader title='Requests' titleTypographyProps={{ variant: 'h6' }} />
 
-          <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
-            {hidden ? (
-              <IconButton
-                color='inherit'
-                onClick={toggleNavVisibility}
-                sx={{ ml: -2.75, ...(hiddenSm ? {} : { mr: 3.5 }) }}
-              >
-                <Menu />
-              </IconButton>
-            ) : null}
-            <TextField
-              onChange={handleSearch}
-              value={inputValue}
-              size='small'
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <Magnify fontSize='small' />
-                  </InputAdornment>
-                )
-              }}
-            />
-          </Box>
-        </Box>
-      </CardActions>
-      <Divider sx={{ margin: 0 }} />
-      <TableContainer>
-        <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>SubTitle</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Que No.</TableCell>
-              <TableCell>ArrivalTime</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {Array.isArray(rowsData) &&
-              rowsData.length > 0 &&
-              rowsData?.map((row, index) => (
-                <TableRow
-                  hover
-                  key={`${row.id}-${index}`}
-                  sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}
+            <Box className='actions-left' sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
+              {hidden ? (
+                <IconButton
+                  color='inherit'
+                  onClick={toggleNavVisibility}
+                  sx={{ ml: -2.75, ...(hiddenSm ? {} : { mr: 3.5 }) }}
                 >
-                  <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
-                        {row.CustomerName}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell>{row.CustomerPhone}</TableCell>
-                  <TableCell>{row.Title}</TableCell>
-                  <TableCell>{row.SubTitle}</TableCell>
-                  <TableCell>{row.Price}</TableCell>
-                  <TableCell>{row.QueNO}</TableCell>
+                  <Menu />
+                </IconButton>
+              ) : null}
+              <TextField
+                onChange={handleSearch}
+                value={inputValue}
+                size='small'
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <Magnify fontSize='small' />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Box>
+          </Box>
+        </CardActions>
+        <Divider sx={{ margin: 0 }} />
+        <TableContainer>
+          <Table sx={{ minWidth: 800 }} aria-label='table in dashboard'>
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Phone</TableCell>
+                <TableCell>Category</TableCell>
+                <TableCell>Service</TableCell>
+                <TableCell>Service Image</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Que No.</TableCell>
+                <TableCell>ArrivalTime</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {Array.isArray(rowsData) &&
+                rowsData.length > 0 &&
+                rowsData?.map((row, index) => (
+                  <TableRow
+                    hover
+                    key={`${row.id}-${index}`}
+                    sx={{ '&:last-of-type td, &:last-of-type th': { border: 0 } }}
+                  >
+                    <TableCell sx={{ py: theme => `${theme.spacing(0.5)} !important` }}>
+                      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                        <Typography sx={{ fontWeight: 500, fontSize: '0.875rem !important' }}>
+                          {row.CustomerName}
+                        </Typography>
+                      </Box>
+                    </TableCell>
+                    <TableCell>{row.CustomerPhone}</TableCell>
+                    <TableCell>{row.Title}</TableCell>
+                    <TableCell>{row.SubTitle}</TableCell>
+                    <TableCell><ImageSearch sx={{ cursor: 'pointer', justifyContent: 'center', width: 100 }} size={3} onClick={() => openImageModal(row.ServiceImage)} /></TableCell>
 
-                  <TableCell>
-                    {row.ArrivalTime && (
-                      <>
-                        <span style={{ paddingRight: 10 }}>{row.ArrivalTime}</span>
+                    <TableCell>{row.Price}</TableCell>
+                    <TableCell>{row.QueNO}</TableCell>
+
+                    <TableCell>
+                      {row.ArrivalTime && (
+                        <>
+                          <span style={{ paddingRight: 10 }}>{row.ArrivalTime}</span>
+                          <Button onClick={() => setSelectedRow(row)} variant='outlined'>
+                            <CalendarRange />
+                          </Button>
+                        </>
+                      )}
+
+                      {!row.ArrivalTime && (
                         <Button onClick={() => setSelectedRow(row)} variant='outlined'>
                           <CalendarRange />
                         </Button>
-                      </>
-                    )}
+                      )}
+                    </TableCell>
 
-                    {!row.ArrivalTime && (
-                      <Button onClick={() => setSelectedRow(row)} variant='outlined'>
-                        <CalendarRange />
-                      </Button>
+                    {selectedRow && (
+                      <Dialog open={!!selectedRow} onClose={() => setSelectedRow(null)}>
+                        <DialogTitle>Select Date and Time</DialogTitle>
+                        <DialogContent sx={{ height: 330, width: 500 }}>
+                          <DateTimePickerComponent row={selectedRow} onChange={handleDateTimeChange} />
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={() => setSelectedRow(null)} color='primary'>
+                            Close
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                     )}
-                  </TableCell>
-
-                  {selectedRow && (
-                    <Dialog open={!!selectedRow} onClose={() => setSelectedRow(null)}>
-                      <DialogTitle>Select Date and Time</DialogTitle>
-                      <DialogContent sx={{ height: 330, width: 500 }}>
-                        <DateTimePickerComponent row={selectedRow} onChange={handleDateTimeChange} />
-                      </DialogContent>
-                      <DialogActions>
-                        <Button onClick={() => setSelectedRow(null)} color='primary'>
-                          Close
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  )}
-                  <TableCell>
-                    <Chip
-                      label={row.Status == 0 ? 'Not Started' : row.Status == 1 ? 'In Progress' : 'Done'}
-                      color={row.Status == 0 ? 'secondary' : row.Status == 1 ? 'info' : 'success'}
-                      sx={{
-                        height: 24,
-                        fontSize: '0.75rem',
-                        textTransform: 'capitalize',
-                        '& .MuiChip-label': { fontWeight: 500 }
-                      }}
-                    />
-                  </TableCell>
-                  <Grid item xs={12} sm={6} sx={{ marginBottom: 3, marginTop: 3, marginRight: 3 }}>
-                    <FormControl fullWidth>
-                      <Select
-                        sx={{ fontSize: 14 }}
-                        id='form-layouts-separator-select'
-                        labelId='form-layouts-separator-select-label'
-                        value={actionValues[row.ReqId] || row.Status} // Use actionValues[row.ReqId]
-                        onChange={event => handleActionChange(event, row.ReqId)}
-                      >
-                        <MenuItem value='0'>Not Started</MenuItem>
-                        <MenuItem value='1'>Progress</MenuItem>
-                        <MenuItem value='2'>Done</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Card>
+                    <TableCell>
+                      <Chip
+                        label={row.Status == 0 ? 'Not Started' : row.Status == 1 ? 'In Progress' : 'Done'}
+                        color={row.Status == 0 ? 'secondary' : row.Status == 1 ? 'info' : 'success'}
+                        sx={{
+                          height: 24,
+                          fontSize: '0.75rem',
+                          textTransform: 'capitalize',
+                          '& .MuiChip-label': { fontWeight: 500 }
+                        }}
+                      />
+                    </TableCell>
+                    <Grid item xs={12} sm={6} sx={{ marginBottom: 3, marginTop: 3, marginRight: 3 }}>
+                      <FormControl fullWidth>
+                        <Select
+                          sx={{ fontSize: 14 }}
+                          id='form-layouts-separator-select'
+                          labelId='form-layouts-separator-select-label'
+                          value={actionValues[row.ReqId] || row.Status} // Use actionValues[row.ReqId]
+                          onChange={event => handleActionChange(event, row.ReqId)}
+                        >
+                          <MenuItem value='0'>Not Started</MenuItem>
+                          <MenuItem value='1'>Progress</MenuItem>
+                          <MenuItem value='2'>Done</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
+      {/* Service image modal */}
+      <ThemeProvider theme={theme}>
+        <Modal
+          isOpen={isServiceImageModalOpen}
+          onRequestClose={closeModal}
+          style={customStyles2}
+          contentLabel='servive Modal'
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <ImgStyled
+              src={imgSrc}
+              alt='image'
+              onError={() => {
+                setImgSrc('/images/avatars/default.jpg')
+              }}
+            />
+          </Box>
+        </Modal>
+      </ThemeProvider>
+      {/* Service image modal */}
+    </>
   )
 }
 
