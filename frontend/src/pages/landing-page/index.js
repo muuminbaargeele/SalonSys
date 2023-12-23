@@ -18,6 +18,7 @@ import Grid from '@mui/material/Grid'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
+import { styled, useTheme } from '@mui/material/styles'
 
 import axios from 'axios'
 import toast from 'react-hot-toast'
@@ -25,13 +26,26 @@ import { getCurrentDate } from 'src/utils/GetCurrentDate'
 import { API_BASE_URL } from 'src/lib/apiConfig'
 import BookingModalForService from 'src/@core/components/modals/BookingModalForService'
 
+const ImgStyled = styled('img')(({ theme }) => ({
+  width: 70,
+  height: 70,
+  marginRight: theme.spacing(6.25),
+  borderRadius: theme.shape.borderRadius,
+  objectFit: 'cover'
+}))
+
 const LandingPage = () => {
   const router = useRouter()
   const { id } = router.query
 
+  // ** State
   const [isLoading, setIsloading] = useState(false)
   const [services, setServices] = useState([])
   const [salonName, setSalonName] = useState('')
+  const [imgSrc, setImgSrc] = useState('/images/avatars/default.jpg')
+
+  // Hooks
+  const theme = useTheme()
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -53,6 +67,12 @@ const LandingPage = () => {
         setServices(data)
         if (data.length > 0 && data[0].SalonName) {
           setSalonName(data[0].SalonName)
+
+          const salonImage =
+            data.SalonImage !== ''
+              ? `${API_BASE_URL}/backend/logo_images/${data[0].SalonImage}`
+              : '/images/avatars/default.jpg'
+          setImgSrc(salonImage)
         }
       } catch (error) {
         console.log(error)
@@ -65,9 +85,17 @@ const LandingPage = () => {
   }, [id])
 
   return (
-    <Box className='' sx={{ marginInline: 20, marginBottom: 10 }}>
-      <Card>
+    <Box className='' sx={{ marginBottom: 10, marginInline: 35, [theme.breakpoints.down('sm')]: { marginInline: 5 } }}>
+      <Card sx={{ display: 'flex', alignItems: 'center', marginTop: 5, position: 'relative' }}>
+        <ImgStyled
+          src={imgSrc}
+          alt='image'
+          onError={() => {
+            setImgSrc('/images/avatars/default.jpg')
+          }}
+        />
         <CardHeader
+          sx={{ position: 'absolute', left: 70 }}
           title={isLoading ? 'Loading...' : salonName}
           titleTypographyProps={{ variant: 'h6', color: 'primary' }}
         />
@@ -167,7 +195,21 @@ const OurServices = ({ services }) => {
         services.map((service, index) => (
           <Grid item xs={12} sm={6} md={4} key={service.serviceId}>
             <Card>
-              <CardMedia sx={{ height: '9.375rem' }} image='/images/cards/watch-on-hand.jpg' />
+              <CardMedia
+                sx={{ height: 300 }}
+                component='img'
+                alt={service.Title}
+                src={
+                  service.ServiceImage !== ''
+                    ? `${API_BASE_URL}/backend/service_images/${service.ServiceImage}`
+                    : '/images/avatars/default.jpg'
+                }
+                onError={e => {
+                  e.target.onerror = null // Remove the event listener to avoid recursion
+                  e.target.src = '/images/avatars/default.jpg'
+                }}
+              />
+
               <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
                 <Typography variant='h6' sx={{ marginBottom: 2 }}>
                   {service.Title}
