@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import { useEffect, useState } from 'react'
+import { useLogo } from 'src/context/SalonLogoContext'
 
 // ** Styled Components
 const MenuHeaderWrapper = styled(Box)(({ theme }) => ({
@@ -47,25 +48,17 @@ const VerticalNavHeader = props => {
 
   // ** Hooks
   const theme = useTheme()
-  const { values, isLoading, fetchLoggedUser } = FetchLoggedUserInfo()
+  const { values, isLoading, } = FetchLoggedUserInfo()
 
-  useEffect(() => {
-    fetchLoggedUser()
-
-    // Set up an interval to fetch user data every 9 seconds
-    const intervalId = setInterval(async () => {
-      await fetchLoggedUser()
-    }, 9000)
-
-    return () => clearInterval(intervalId)
-  }, [values.SalonImage])
+  const { SalonLogo, setSalonLogo } = useLogo()
 
   // Conditionally render the S alonAdmin image
   const renderSalonAdminImage = () => {
     if (values.role === 'SalonAdmin') {
       return (
         <ImgStyled
-          src={values.role === 'SalonAdmin' && values.SalonImage ? values.SalonImage : '/images/avatars/default.jpg'}
+          // src={values.role === 'SalonAdmin' && values.SalonImage ? values.SalonImage : '/images/avatars/default.jpg'}
+          src={values.role === 'SalonAdmin' && SalonLogo}
           alt='image'
           onError={e => {
             e.target.onerror = null // Remove the event listener to avoid recursion

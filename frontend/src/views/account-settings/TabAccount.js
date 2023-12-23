@@ -21,6 +21,7 @@ import Divider from '@mui/material/Divider'
 
 import FetchLoggedUserInfo from 'src/hooks/FetchLoggedUserInfo'
 import { API_BASE_URL } from 'src/lib/apiConfig'
+import { useLogo } from 'src/context/SalonLogoContext'
 
 // ** Icons Imports
 
@@ -41,6 +42,7 @@ const ButtonStyled = styled(Button)(({ theme }) => ({
 
 const TabAccount = () => {
   const { values, setValues, isLoading, fetchLoggedUser } = FetchLoggedUserInfo()
+  const { SalonLogo, setSalonLogo } = useLogo()
 
   // ** State
   const [imgSrc, setImgSrc] = useState(values.SalonImage ? values.SalonImage : '/images/avatars/default.jpg')
@@ -65,6 +67,7 @@ const TabAccount = () => {
     if (files && files.length !== 0) {
       reader.onload = () => {
         setImgSrc(reader.result)
+        setSalonLogo(reader.result)
         uploadImage()
       }
       reader.readAsDataURL(files[0])
@@ -280,7 +283,7 @@ const TabAccount = () => {
           )}
 
           <Grid item xs={12}>
-            <Button type='submit' variant='contained' sx={{ marginRight: 3.5 }} onClick={() => {}}>
+            <Button type='submit' variant='contained' sx={{ marginRight: 3.5 }} onClick={() => { }}>
               Save Changes
             </Button>
             <Button variant='outlined' color='secondary' onClick={logout}>

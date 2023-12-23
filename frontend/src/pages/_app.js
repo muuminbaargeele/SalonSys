@@ -29,6 +29,7 @@ import '../../styles/globals.css'
 
 // ** Contexts
 import { AuthContextProvider } from 'src/context/AuthContext'
+import { LogoContextProvider } from 'src/context/SalonLogoContext'
 
 import Modal from 'react-modal'
 
@@ -78,13 +79,15 @@ const App = props => {
       </Head>
 
       <AuthContextProvider>
-        <SettingsProvider>
-          <SettingsConsumer>
-            {({ settings }) => {
-              return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-            }}
-          </SettingsConsumer>
-        </SettingsProvider>
+        <LogoContextProvider>
+          <SettingsProvider>
+            <SettingsConsumer>
+              {({ settings }) => {
+                return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+              }}
+            </SettingsConsumer>
+          </SettingsProvider>
+        </LogoContextProvider>
       </AuthContextProvider>
     </CacheProvider>
   )
