@@ -187,44 +187,50 @@ const OurServices = ({ services }) => {
   return (
     <Grid container spacing={6} sx={{ marginTop: 5 }}>
       <Grid item xs={12} sx={{ paddingBottom: 1 }}>
-        <Typography variant='h5'>Our services</Typography>
+        <Typography variant='h5' color='primary'>
+          Our services
+        </Typography>
       </Grid>
 
       {Array.isArray(services) &&
         services.length > 0 &&
         services.map((service, index) => (
-          <Grid item xs={12} sm={6} md={4} key={service.serviceId}>
-            <Card>
-              <CardMedia
-                sx={{ height: 300 }}
-                component='img'
-                alt={service.Title}
-                src={
-                  service.ServiceImage !== ''
-                    ? `${API_BASE_URL}/backend/service_images/${service.ServiceImage}`
-                    : '/images/avatars/default.jpg'
-                }
-                onError={e => {
-                  e.target.onerror = null // Remove the event listener to avoid recursion
-                  e.target.src = '/images/avatars/default.jpg'
-                }}
-              />
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            {!service.SalonImage || !service.Price || !service.SubTitle || !service.Price ? (
+              <Typography variant='h6'>Sorry no services yet 😶😶</Typography>
+            ) : (
+              <Card>
+                <CardMedia
+                  sx={{ height: 300 }}
+                  component='img'
+                  alt={service.Title}
+                  src={
+                    service.ServiceImage !== ''
+                      ? `${API_BASE_URL}/backend/service_images/${service.ServiceImage}`
+                      : '/images/avatars/default.jpg'
+                  }
+                  onError={e => {
+                    e.target.onerror = null // Remove the event listener to avoid recursion
+                    e.target.src = '/images/avatars/default.jpg'
+                  }}
+                />
 
-              <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
-                <Typography variant='h6' sx={{ marginBottom: 2 }}>
-                  {service.Title}
-                </Typography>
-                <Typography sx={{ marginBottom: 2 }}>${service.Price}</Typography>
-                <Typography variant='body2'>{service.SubTitle}</Typography>
-              </CardContent>
-              <Button
-                variant='contained'
-                sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-                onClick={() => openModal(service.serviceId)}
-              >
-                Select
-              </Button>
-            </Card>
+                <CardContent sx={{ padding: theme => `${theme.spacing(3, 5.25, 4)} !important` }}>
+                  <Typography variant='h6' sx={{ marginBottom: 2 }}>
+                    {service.Title}
+                  </Typography>
+                  <Typography sx={{ marginBottom: 2 }}>${service.Price}</Typography>
+                  <Typography variant='body2'>{service.SubTitle}</Typography>
+                </CardContent>
+                <Button
+                  variant='contained'
+                  sx={{ py: 2.5, width: '100%', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+                  onClick={() => openModal(service.serviceId)}
+                >
+                  Select
+                </Button>
+              </Card>
+            )}
           </Grid>
         ))}
 

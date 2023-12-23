@@ -185,7 +185,7 @@ const SalonAdminDashbardTable = ({ row }) => {
       <TableCell>{row.SubTitle}</TableCell>
       <TableCell>{row.Price}</TableCell>
       <TableCell>{row.QueNO}</TableCell>
-      <TableCell>{row.ArrivalTime}</TableCell>
+      <TableCell>{!row.ArrivalTime ? 'Not started' : row.ArrivalTime}</TableCell>
       <TableCell>
         <Chip
           label={row.Status == 0 ? 'Not Started' : row.Status == 1 ? 'In Progress' : 'Done'}
