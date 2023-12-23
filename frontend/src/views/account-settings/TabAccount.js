@@ -137,7 +137,6 @@ const TabAccount = () => {
     if (fileInput.files.length > 0) {
       formData.append('image', fileInput.files[0])
       formData.append('Username', values.username)
-      console.log(fileInput.files[0])
     }
 
     const requestData = {
@@ -151,6 +150,7 @@ const TabAccount = () => {
       const response = await axios.post(`${API_BASE_URL}/backend/api/upload_logo_img.php`, formData, requestData)
       if (response) {
         fetchLoggedUser()
+        console.log('called ')
         toast.success('Uploaded successfully')
       }
     } catch (error) {

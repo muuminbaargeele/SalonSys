@@ -49,19 +49,33 @@ const VerticalNavHeader = props => {
   const theme = useTheme()
   const { values, isLoading, fetchLoggedUser } = FetchLoggedUserInfo()
 
-  const [imgSrc, setImgSrc] = useState(values.SalonImage ? values.SalonImage : '/images/avatars/1.png')
-
   useEffect(() => {
     fetchLoggedUser()
-  }, [])
 
-  useEffect(() => {
-    if (values.SalonImage) {
-      setImgSrc(values.SalonImage)
-    } else {
-      setImgSrc('/images/avatars/1.png')
-    }
+    // Set up an interval to fetch user data every 9 seconds
+    const intervalId = setInterval(async () => {
+      await fetchLoggedUser()
+    }, 9000)
+
+    return () => clearInterval(intervalId)
   }, [values.SalonImage])
+
+  // Conditionally render the S alonAdmin image
+  const renderSalonAdminImage = () => {
+    if (values.role === 'SalonAdmin') {
+      return (
+        <ImgStyled
+          src={values.role === 'SalonAdmin' && values.SalonImage ? values.SalonImage : '/images/avatars/default.jpg'}
+          alt='image'
+          onError={e => {
+            e.target.onerror = null // Remove the event listener to avoid recursion
+            e.target.src = '/images/avatars/default.jpg'
+          }}
+        />
+      )
+    }
+    return null
+  }
 
   return (
     <MenuHeaderWrapper className='nav-header' sx={{ pl: 6 }}>
@@ -71,15 +85,7 @@ const VerticalNavHeader = props => {
         <Link href='/' passHref>
           <StyledLink>
             {/* Salon admin */}
-            {values.role == 'SalonAdmin' && (
-              <ImgStyled
-                src={values.role == 'SalonAdmin' && imgSrc}
-                alt='image'
-                onError={() => {
-                  setImgSrc('/images/avatars/1.png')
-                }}
-              />
-            )}
+            {renderSalonAdminImage()}
 
             {/* Main admin */}
             {values.role == 'MainAdmin' && (
