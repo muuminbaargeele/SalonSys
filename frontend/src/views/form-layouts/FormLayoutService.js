@@ -17,6 +17,7 @@ import axios from 'axios'
 import { API_BASE_URL } from 'src/lib/apiConfig'
 
 import { getCurrentDate } from 'src/utils/GetCurrentDate'
+import { Box } from '@mui/material'
 
 const FormLayoutsSeparator = () => {
   const [values, setValues] = useState({
@@ -52,7 +53,6 @@ const FormLayoutsSeparator = () => {
     let fileInput = document.getElementById('account-settings-upload-image')
     if (fileInput.files.length > 0) {
       formData.append('image', fileInput.files[0])
-      console.log(fileInput.files[0])
     }
 
     if (!values.Title || !values.SubTitle || !values.Price || !formData) return toast.error('Fill all inputfields.')
@@ -122,13 +122,26 @@ const FormLayoutsSeparator = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                type='file'
-                onChange={onChange}
-                accept='image/png, image/jpeg'
-                id='account-settings-upload-image'
-              />
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  border: '1px solid rgba(128, 128, 128, 0.5)',
+                  borderRadius: 6,
+                  height: '100%',
+                  padding: '0 14px'
+                }}
+              >
+                <input
+                  style={{
+                    width: '100%' // Make the input fill the entire width of the parent div
+                  }}
+                  type='file'
+                  onChange={onChange}
+                  accept='image/png, image/jpeg'
+                  id='account-settings-upload-image'
+                />
+              </div>
             </Grid>
           </Grid>
         </CardContent>

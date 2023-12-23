@@ -63,6 +63,9 @@ const LandingPage = () => {
       try {
         const response = await axios.post(`${API_BASE_URL}/backend/api/get_saloninfo.php`, params, requestData)
         const data = await response.data
+        console.log(data)
+
+        if (data[0] == 'Salon Not Found') return router.push('/pages/error_landing_page')
 
         setServices(data)
         if (data.length > 0 && data[0].SalonName) {
@@ -196,7 +199,7 @@ const OurServices = ({ services }) => {
         services.length > 0 &&
         services.map((service, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            {!service.SalonImage || !service.Price || !service.SubTitle || !service.Price ? (
+            {!service.ServiceImage || !service.Price || !service.SubTitle || !service.Price ? (
               <Typography variant='h6'>Sorry no services yet 😶😶</Typography>
             ) : (
               <Card>
