@@ -38,7 +38,7 @@ const FetchOverviewData = () => {
 
       setIsLoading(true)
       try {
-        const response = await axios.post(`${API_BASE_URL}/backend/api/get_overview.php`, params, requestData)
+        const response = await axios.post(`../../../backend/api/get_overview.php`, params, requestData)
         let data
         if (values.role == 'MainAdmin') {
           // Main admin

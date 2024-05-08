@@ -163,7 +163,7 @@ const ManageTable = props => {
     setIsServiceImageModal(true)
     const findSelectedService = services.find(service => service.serviceId == id)
     const image =
-      findSelectedService.ServiceImage !== '' ? `${API_BASE_URL}/backend/service_images/${findSelectedService.ServiceImage}` : '/images/avatars/default.jpeg'
+      findSelectedService.ServiceImage !== '' ? `../../../../backend/service_images/${findSelectedService.ServiceImage}` : '/images/avatars/default.jpeg'
     setImgSrc(image)
   }
 
@@ -208,7 +208,7 @@ const ManageTable = props => {
     params.append('Price', selectedService.ServicePrice)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/update_services.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/update_services.php`, params, requestData)
       const data = await response.data
       if (data) {
         fetchServicesData()
@@ -244,7 +244,7 @@ const ManageTable = props => {
     params.append('ServiceId', id)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/delete_service.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/delete_service.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)

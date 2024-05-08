@@ -18,7 +18,7 @@ const FetchOverviewTableData = () => {
     params.append('Username', currentLoggedUser)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/get_dashtable.php`, params, requestData)
+      const response = await axios.post(`../../../backend/api/get_dashtable.php`, params, requestData)
       const data = await response.data
 
       if (data) {

@@ -67,7 +67,7 @@ const FormLayoutsSeparator = () => {
     formData.append('CreateDT', currentDate)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/upload_service.php`, formData)
+      const response = await axios.post(`../../../../backend/api/upload_service.php`, formData)
       const data = await response.data
       console.log(data)
       if (data == 'Success') {

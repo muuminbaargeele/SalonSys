@@ -250,7 +250,7 @@ const ManageTable = props => {
     params.append('Username', currUsername)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/update_manage.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/update_manage.php`, params, requestData)
       const data = await response.data
       if (data) {
         fetchSalonManageData()
@@ -295,7 +295,7 @@ const ManageTable = props => {
     params.append('Shift', selectedSalonEmployer.EmployerShift)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/update_manage.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/update_manage.php`, params, requestData)
       const data = await response.data
       if (data) {
         fetchSalonManageData()
@@ -331,7 +331,7 @@ const ManageTable = props => {
     params.append('SalonID', id)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/delete_salonadmin.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/delete_salonadmin.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)
@@ -359,7 +359,7 @@ const ManageTable = props => {
     params.append('SalonUser', id)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/delete_salonadmin.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/delete_salonadmin.php`, params, requestData)
       const data = await response.data
       console.log(data)
       if (data == 'Success') {

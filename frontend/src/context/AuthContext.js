@@ -27,7 +27,7 @@ export const AuthContextProvider = ({ children }) => {
 
     setIsLoading(true)
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/login.php`, params, requestData)
+      const response = await axios.post(`../../../backend/api/login.php`, params, requestData)
       const data = await response.data
       if (data[0] == 'Success') {
         window.localStorage.setItem('username', username)

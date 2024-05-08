@@ -61,7 +61,7 @@ const LandingPage = () => {
 
       setIsloading(true)
       try {
-        const response = await axios.post(`${API_BASE_URL}/backend/api/get_saloninfo.php`, params, requestData)
+        const response = await axios.post(`../../../../backend/api/get_saloninfo.php`, params, requestData)
         const data = await response.data
         console.log(data)
 
@@ -73,7 +73,7 @@ const LandingPage = () => {
 
           const salonImage =
             data.SalonImage !== ''
-              ? `${API_BASE_URL}/backend/logo_images/${data[0].SalonImage}`
+              ? `../../../../backend/logo_images/${data[0].SalonImage}`
               : '/images/avatars/default.jpg'
           setImgSrc(salonImage)
         }
@@ -175,7 +175,7 @@ const OurServices = ({ services }) => {
     params.append('Price', selectedService.ServicePrice)
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/booking.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/booking.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(`Booked ${data}fully.`)
@@ -212,7 +212,7 @@ const OurServices = ({ services }) => {
                   alt={service.Title}
                   src={
                     service.ServiceImage !== ''
-                      ? `${API_BASE_URL}/backend/service_images/${service.ServiceImage}`
+                      ? `../../../../backend/service_images/${service.ServiceImage}`
                       : '/images/avatars/default.jpg'
                   }
                   onError={e => {

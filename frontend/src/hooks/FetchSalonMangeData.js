@@ -18,7 +18,7 @@ const FetchSalonMangeData = () => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/manage.php`, params, requestData)
+      const response = await axios.post(`../../../backend/api/manage.php`, params, requestData)
       const data = await response.data
       if (data) {
         setSalonManageData(data)
@@ -41,7 +41,7 @@ const FetchSalonMangeData = () => {
       }
 
       try {
-        const response = await axios.post(`${API_BASE_URL}/backend/api/manage.php`, params, requestData)
+        const response = await axios.post(`../../../backend/api/manage.php`, params, requestData)
         const data = await response.data
         if (data) {
           setSalonManageData(data)

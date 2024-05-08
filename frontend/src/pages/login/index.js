@@ -94,7 +94,7 @@ const LoginPage = () => {
 
       setIsloadingLoggedUser(true)
       try {
-        const response = await axios.post(`${API_BASE_URL}/backend/api/get_saloninfo.php`, params, requestData)
+        const response = await axios.post(`../../../../backend/api/get_saloninfo.php`, params, requestData)
         const data = await response.data
         if (data.length > 0 && data[0].SalonName) {
           setLoggedName(data[0].SalonName)

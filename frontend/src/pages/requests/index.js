@@ -103,7 +103,7 @@ const DashboardTable = props => {
     setIsServiceImageModal(true)
     
     const image =
-      img !== '' ? `${API_BASE_URL}/backend/service_images/${img}` : '/images/avatars/default.jpeg'
+      img !== '' ? `../../../../backend/service_images/${img}` : '/images/avatars/default.jpeg'
     setImgSrc(image)
   }
 
@@ -121,7 +121,7 @@ const DashboardTable = props => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/update_requests.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/update_requests.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         toast.success(data)
@@ -216,7 +216,7 @@ const DashboardTable = props => {
     }
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/set_arrivaltime.php`, params, requestData)
+      const response = await axios.post(`../../../../backend/api/set_arrivaltime.php`, params, requestData)
       const data = await response.data
       if (data == 'Success') {
         fetchOverviewTable()

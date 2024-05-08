@@ -31,12 +31,12 @@ const FetchLoggedUserInfo = () => {
 
     if (values.salonName == null) return setIsLoading(true)
     try {
-      const response = await axios.post(`${API_BASE_URL}/backend/api/get_admins.php`, params, requestData)
+      const response = await axios.post(`../../../backend/api/get_admins.php`, params, requestData)
       const data = await response.data[0]
 
       const salonImage =
         data.SalonImage !== ''
-          ? `${API_BASE_URL}/backend/logo_images/${data.SalonImage}`
+          ? `../../../backend/logo_images/${data.SalonImage}`
           : '/images/avatars/default.jpg'
 
       setValues({
